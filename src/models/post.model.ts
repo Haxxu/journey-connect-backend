@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import Joi from 'joi';
 
-import { IPost } from '@config/interface/post.interface';
+import { IPost } from '@configs/interface/post.interface';
 
 type PostModel = mongoose.Model<IPost, {}, {}>;
 

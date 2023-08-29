@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
-import User from '@model/user.model';
-import Group from '@/models/group.model';
+import User from '@models/user.model';
+import Group from '@models/group.model';
 import { addUserToGroup, generateFakeUsers } from './user.faker';
 import { generateFakeGroups } from './group.faker';
 import {

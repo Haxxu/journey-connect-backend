@@ -54,5 +54,5 @@ export interface IUser extends Document {
 	avatar?: string;
 	background?: string;
 	posts: IPostAdded[];
-	_doc: object;
+	_doc?: object;
 }

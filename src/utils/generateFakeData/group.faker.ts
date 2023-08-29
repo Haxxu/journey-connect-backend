@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
-import User from '@/models/user.model';
-import Group from '@/models/group.model';
+import User from '@models/user.model';
+import Group from '@models/group.model';
 
 export async function generateFakeGroups(count: number): Promise<string[]> {
 	const fakeGroups = [];

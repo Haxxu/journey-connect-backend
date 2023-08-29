@@ -3,10 +3,11 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 
-import { env } from '@config/environment';
-import database from '@config/database';
-import errorHandler from '@middleware/error-handler.middleware';
-import generateFakeData from '@util/generateFakeData';
+import { env } from '@configs/environment';
+import database from '@configs/database';
+import errorHandler from '@middlewares/error-handler.middleware';
+import generateFakeData from '@utils/generateFakeData';
+import routes from '@/routes';
 
 dotenv.config();
 
@@ -24,6 +25,9 @@ app.use(morgan('dev'));
 
 // Reset database and generate new data
 // generateFakeData();
+
+// Routes
+app.use('/api', routes);
 
 // Error handler
 app.use(errorHandler);

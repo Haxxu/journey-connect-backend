@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import Joi from 'joi';
 
-import { IGroup } from '@config/interface/group.interface';
+import { IGroup } from '@configs/interface/group.interface';
 
 type GroupModel = mongoose.Model<IGroup, {}, {}>;
 

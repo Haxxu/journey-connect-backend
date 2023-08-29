@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
-import Group from '@/models/group.model';
-import User from '@/models/user.model';
-import Post from '@/models/post.model';
-import Emotion from '@/models/emotion.model';
+import Group from '@models/group.model';
+import User from '@models/user.model';
+import Post from '@models/post.model';
+import Emotion from '@models/emotion.model';
 
 export async function generateFakeEmotions(count: number): Promise<string[]> {
 	const fakeEmotions = [];

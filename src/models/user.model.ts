@@ -4,7 +4,7 @@ import passwordComplexity from 'joi-password-complexity';
 import jwt from 'jsonwebtoken';
 import { faker } from '@faker-js/faker';
 
-import { IUser } from '@config/interface/user.interface';
+import { IUser } from '@configs/interface/user.interface';
 
 type UserModel = mongoose.Model<IUser, {}, {}>;
 
@@ -12,7 +12,6 @@ const userSchema = new mongoose.Schema<IUser, UserModel, {}>(
 	{
 		username: {
 			type: String,
-			required: true,
 			trim: true,
 		},
 		email: {
@@ -25,10 +24,10 @@ const userSchema = new mongoose.Schema<IUser, UserModel, {}>(
 			required: true,
 			trim: true,
 		},
-		first_name: { type: String, trim: true },
-		last_name: { type: String, trim: true },
-		birth_date: { type: Date },
-		gender: { type: String, trim: true },
+		first_name: { type: String, trim: true, required: true },
+		last_name: { type: String, trim: true, required: true },
+		birth_date: { type: Date, required: true },
+		gender: { type: String, trim: true, required: true },
 		work_places: [
 			{
 				name: {
@@ -201,5 +200,18 @@ const userSchema = new mongoose.Schema<IUser, UserModel, {}>(
 );
 
 const User = mongoose.model<IUser>('User', userSchema);
+
+export const validateCreateUser = (user: IUser) => {
+	const schema = Joi.object({
+		email: Joi.string().email().required(),
+		password: passwordComplexity().required(),
+		first_name: Joi.string().required(),
+		last_name: Joi.string().required(),
+		birth_date: Joi.date().iso().max('now').required(),
+		gender: Joi.string().trim().valid('male', 'female', 'other').required(),
+	});
+
+	return schema.validate(user);
+};
 
 export default User;
