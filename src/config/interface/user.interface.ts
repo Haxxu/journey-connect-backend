@@ -54,5 +54,12 @@ export interface IUser extends Document {
 	avatar?: string;
 	background?: string;
 	posts: IPostAdded[];
+	refresh_token?: any;
 	_doc?: object;
+}
+
+export interface IUserMethods {
+	generateAuthToken(): string;
+	generateAccessToken(): string;
+	generateRefreshToken(): string;
 }

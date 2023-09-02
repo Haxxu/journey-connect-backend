@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import Joi from 'joi';
 
-import { IEmontion } from '@config/interface/emotion.interface';
+import { IEmontion } from '@configs/interface/emotion.interface';
 
 type EmotionModel = mongoose.Model<IEmontion, {}, {}>;
 

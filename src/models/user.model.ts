@@ -4,11 +4,16 @@ import passwordComplexity from 'joi-password-complexity';
 import jwt from 'jsonwebtoken';
 import { faker } from '@faker-js/faker';
 
-import { IUser } from '@configs/interface/user.interface';
+import { IUser, IUserMethods } from '@configs/interface/user.interface';
+import { env } from '@/config/environment';
+import {
+	generateAccessToken,
+	generateRefreshToken,
+} from '@/config/generate-token';
 
-type UserModel = mongoose.Model<IUser, {}, {}>;
+type UserModel = mongoose.Model<IUser, {}, IUserMethods>;
 
-const userSchema = new mongoose.Schema<IUser, UserModel, {}>(
+const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>(
 	{
 		username: {
 			type: String,
@@ -195,11 +200,52 @@ const userSchema = new mongoose.Schema<IUser, UserModel, {}>(
 				_id: false,
 			},
 		],
+		refresh_token: [
+			{
+				token: {
+					type: String,
+					required: true,
+				},
+				created_at: {
+					type: Date,
+					default: Date.now,
+				},
+			},
+		],
 	},
 	{ timestamps: true }
 );
 
-const User = mongoose.model<IUser>('User', userSchema);
+userSchema.methods.generateAuthToken = function (): string {
+	const token = jwt.sign(
+		{
+			id: this._id,
+			email: this.email,
+		},
+		env.jwt_private_key as string,
+		{
+			expiresIn: '7d',
+		}
+	);
+
+	return token;
+};
+
+userSchema.methods.generateAccessToken = function (): string {
+	return generateAccessToken({
+		id: this._id,
+		email: this.email,
+	});
+};
+
+userSchema.methods.generateRefreshToken = function (): string {
+	return generateRefreshToken({
+		id: this._id,
+		email: this.email,
+	});
+};
+
+const User = mongoose.model<IUser, UserModel>('User', userSchema);
 
 export const validateCreateUser = (user: IUser) => {
 	const schema = Joi.object({
