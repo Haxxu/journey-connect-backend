@@ -63,3 +63,19 @@ export interface IUserMethods {
 	generateAccessToken(): string;
 	generateRefreshToken(): string;
 }
+
+export interface INewUser {
+	first_name: string;
+	last_name: string;
+	email: string;
+	password: string;
+	gender: string;
+	birth_date: Date;
+}
+
+export interface IDecodedActiveToken {
+	id?: string;
+	newUser?: INewUser;
+	iat: number;
+	exp: number;
+}

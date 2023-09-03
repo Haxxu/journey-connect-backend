@@ -13,11 +13,12 @@ export async function generateFakeUsers(count: number): Promise<string[]> {
 			_id: faker.database.mongodbObjectId(),
 			username: faker.internet.userName(),
 			email: faker.internet.email(),
-			password: faker.internet.password(),
-			firstName: faker.person.firstName(),
-			lastName: faker.person.lastName(),
+			password:
+				'$2b$10$NB9Nqpi./k.pgKESfYszXOTwMsHZZKZ6z5VuqBjvadpQJ/RyDaPFu',
+			first_name: faker.person.firstName(),
+			last_name: faker.person.lastName(),
 			birth_date: faker.date.birthdate(),
-			gender: faker.helpers.arrayElement(['male', 'female', '']),
+			gender: faker.helpers.arrayElement(['male', 'female', 'other']),
 			work_places: [
 				{
 					name: faker.company.name(),
