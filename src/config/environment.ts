@@ -11,4 +11,14 @@ export const env = {
 	private_active_token_key: process.env.PRIVATE_ACTIVE_TOKEN_KEY || '',
 	hash_salt: process.env.HASH_SALT || '',
 	client_url: process.env.CLIENT_URL || '',
+
+	// Firebase
+	apiKey: process.env.API_KEY || '',
+	authDomain: process.env.AUTH_DOMAIN || '',
+	projectId: process.env.PROJECT_ID || '',
+	storageBucket: process.env.STORAGE_BUCKET || '',
+	messagingSenderId: process.env.MESSAGING_SENDER_ID || '',
+	appId: process.env.APP_ID || '',
+	measurementId: process.env.MEASUREMENT_ID,
+	firebaseDBUrl: process.env.FIREBASE_DB_URL,
 };
