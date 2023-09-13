@@ -31,6 +31,9 @@ const postSchema = new mongoose.Schema<IPost, PostModel, {}>(
 					trim: true,
 				},
 				url: { type: String, trim: true },
+				id: {
+					type: String,
+				},
 				_id: false,
 			},
 		],

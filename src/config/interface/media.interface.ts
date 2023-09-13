@@ -3,6 +3,8 @@ import { Types } from 'mongoose';
 export interface IMedia {
 	type: string;
 	url: string;
-	signature?: string;
-	owner?: string | Types.ObjectId;
+	path?: string;
+	original_name?: string;
+	size?: number;
+	verified?: boolean;
 }

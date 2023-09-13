@@ -8,11 +8,11 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 // [POST] => register user
 router.post(
-	'/files/upload',
-	upload.single('filename'),
+	'/files/upload-file',
+	upload.single('file'),
 	fileController.uploadFile
 );
 
-router.delete('/files/delete', fileController.deleteFile);
+router.delete('/files/delete-file', fileController.deleteFile);
 
 export default router;

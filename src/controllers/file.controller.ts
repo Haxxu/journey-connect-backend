@@ -9,6 +9,7 @@ import { storage } from '@/database/firebase';
 import { NextFunction, Request, Response } from 'express';
 import ApiError from '@/utils/api-error';
 import { ApiResPayload } from '@/utils/api';
+import Media from '@/models/media.model';
 
 interface MulterRequest extends Request {
 	file: any;
@@ -17,18 +18,13 @@ interface MulterRequest extends Request {
 class FileController {
 	async uploadFile(req: any, res: Response, next: NextFunction) {
 		try {
+			const newMedia = new Media();
+			const original_name = req.file.originalname;
 			const dateTime = giveCurrentDateTime();
+			const path = `files/${newMedia._id}_${original_name}_${dateTime}`;
 
-			const storageRef = ref(
-				storage,
-				`files/${
-					req.file.originalname +
-					'-' +
-					dateTime +
-					'-' +
-					generateRandomId()
-				}`
-			);
+			const storageRef = ref(storage, path);
+			const fileSize = req.file.buffer.byteLength;
 
 			const metadata = {
 				contentType: req.file.mimetype,
@@ -40,17 +36,28 @@ class FileController {
 				metadata
 			);
 
-			const downloadUrl = await getDownloadURL(snapshot.ref);
+			const url = await getDownloadURL(snapshot.ref);
 
-			return res
-				.status(200)
-				.json(
-					ApiResPayload(
-						{ url: downloadUrl, type: 'image', signature: 'id' },
-						true,
-						'Upload file success.'
-					)
-				);
+			newMedia.path = path;
+			newMedia.url = url;
+			newMedia.size = fileSize;
+
+			const savedMedia = await newMedia.save();
+
+			return res.status(200).json(
+				ApiResPayload(
+					{
+						media: {
+							url,
+							id: savedMedia._id,
+							type: savedMedia.type,
+							action: 'add',
+						},
+					},
+					true,
+					'Upload file success.'
+				)
+			);
 		} catch (error) {
 			console.log(error);
 			return next(new ApiError());
@@ -59,15 +66,45 @@ class FileController {
 
 	async deleteFile(req: Request, res: Response, next: NextFunction) {
 		try {
-			const fileUrl = req.body.fileUrl;
+			const media = await Media.findOne({ _id: req.body.id });
+			if (!media) {
+				return res.status(404).json({
+					success: false,
+					data: null,
+					message: 'Media not found.',
+				});
+			}
 
-			const fileRef = ref(storage, fileUrl);
+			if (media?.verified) {
+				return res.status(200).json(
+					ApiResPayload(
+						{
+							media: {
+								type: media.type,
+								id: media._id,
+								url: media.url,
+								action: 'remove',
+							},
+						},
+						true,
+						'File deleted successfully.'
+					)
+				);
+			}
 
+			const fileRef = ref(storage, media?.path);
 			await deleteObject(fileRef);
+			await Media.findOneAndRemove({ _id: req.body.media_id });
 
-			return res
-				.status(200)
-				.json(ApiResPayload({}, true, 'File deleted successfully.'));
+			return res.status(200).json(
+				ApiResPayload(
+					{
+						media: null,
+					},
+					true,
+					'File deleted successfully.'
+				)
+			);
 		} catch (error) {
 			console.error(error);
 			return next(new ApiError());

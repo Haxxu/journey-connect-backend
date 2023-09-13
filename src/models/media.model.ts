@@ -7,21 +7,27 @@ type MediaModel = mongoose.Model<IMedia, {}, {}>;
 
 const mediaSchema = new mongoose.Schema<IMedia, MediaModel, {}>(
 	{
-		owner: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: 'User',
-			required: true,
-		},
 		type: {
 			type: String, // image, video, mp3, mp4?
 			default: 'image',
 		},
-		signature: {
+		original_name: {
 			type: String,
+		},
+		path: {
+			type: String,
+			required: true,
 		},
 		url: {
 			type: String,
 			required: true,
+		},
+		size: {
+			type: Number,
+		},
+		verified: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	{ timestamps: true }
