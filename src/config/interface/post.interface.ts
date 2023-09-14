@@ -24,7 +24,7 @@ export interface IInnerPost {
 export interface IPost extends Document {
 	title: string;
 	theme?: string;
-	owner: string | Types.ObjectId;
+	owner?: string | Types.ObjectId;
 	inner_post?: string | Types.ObjectId;
 	group?: string | Types.ObjectId;
 	post_type: string; // group_post, individual_post, share_post

@@ -133,4 +133,24 @@ const postSchema = new mongoose.Schema<IPost, PostModel, {}>(
 
 const Post = mongoose.model<IPost>('Post', postSchema);
 
+export const validateCreatePost = (post: IPost) => {
+	const schema = Joi.object({
+		title: Joi.string().required(),
+		visibility: Joi.string()
+			.valid(
+				'private_group',
+				'public_group',
+				'friend_only',
+				'public',
+				'private'
+			)
+			.required(),
+		post_type: Joi.string()
+			.valid('group_post', 'share_post', 'individual_post', '')
+			.required(),
+	});
+
+	return schema.validate(post);
+};
+
 export default Post;
