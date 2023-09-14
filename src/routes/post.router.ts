@@ -1,16 +1,17 @@
 import { Router } from 'express';
 
 import postController from '@controllers/post.controller';
+import userAuth from '@/middlewares/user-auth.middleware';
 
 const router = Router();
 
 // [POST] => create post
-router.post('/posts', postController.createPost);
+router.post('/posts', [userAuth, postController.createPost]);
 
 // [POST] => update post
-router.put('/posts/:id', postController.createPost);
+router.put('/posts/:id', [userAuth, postController.createPost]);
 
 // [POST] => delete post
-router.delete('/post/:id', postController.createPost);
+router.delete('/posts/:id', [userAuth, postController.deletePostById]);
 
 export default router;

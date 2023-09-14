@@ -219,7 +219,7 @@ const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>(
 userSchema.methods.generateAuthToken = function (): string {
 	const token = jwt.sign(
 		{
-			id: this._id,
+			_id: this._id,
 			email: this.email,
 		},
 		env.jwt_private_key as string,
@@ -233,14 +233,14 @@ userSchema.methods.generateAuthToken = function (): string {
 
 userSchema.methods.generateAccessToken = function (): string {
 	return generateAccessToken({
-		id: this._id,
+		_id: this._id,
 		email: this.email,
 	});
 };
 
 userSchema.methods.generateRefreshToken = function (): string {
 	return generateRefreshToken({
-		id: this._id,
+		_id: this._id,
 		email: this.email,
 	});
 };

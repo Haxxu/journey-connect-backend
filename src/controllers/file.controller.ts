@@ -10,6 +10,8 @@ import { NextFunction, Request, Response } from 'express';
 import ApiError from '@/utils/api-error';
 import { ApiResPayload } from '@/utils/api';
 import Media from '@/models/media.model';
+import { IReqAuth } from '@/config/interface/shared.interface';
+import MediaService from '@/services/media.service';
 
 interface MulterRequest extends Request {
 	file: any;
@@ -18,7 +20,7 @@ interface MulterRequest extends Request {
 class FileController {
 	async uploadFile(req: any, res: Response, next: NextFunction) {
 		try {
-			const newMedia = new Media();
+			const newMedia = new Media({ owner: req.user._id });
 			const original_name = req.file.originalname;
 			const dateTime = giveCurrentDateTime();
 			const path = `files/${newMedia._id}_${original_name}_${dateTime}`;
@@ -64,7 +66,7 @@ class FileController {
 		}
 	}
 
-	async deleteFile(req: Request, res: Response, next: NextFunction) {
+	async deleteFile(req: any, res: Response, next: NextFunction) {
 		try {
 			const media = await Media.findOne({ _id: req.body.id });
 			if (!media) {
@@ -92,9 +94,7 @@ class FileController {
 				);
 			}
 
-			const fileRef = ref(storage, media?.path);
-			await deleteObject(fileRef);
-			await Media.findOneAndRemove({ _id: req.body.media_id });
+			await MediaService.deleteFiles([req.body.id], req.user?._id);
 
 			return res.status(200).json(
 				ApiResPayload(

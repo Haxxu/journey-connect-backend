@@ -79,3 +79,10 @@ export interface IDecodedActiveToken {
 	iat: number;
 	exp: number;
 }
+
+export interface IDecodedAuthToken {
+	_id?: string;
+	email?: string;
+	iat: number;
+	exp: number;
+}

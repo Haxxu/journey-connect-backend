@@ -1,4 +1,6 @@
+import { Request } from 'express';
 import { Types } from 'mongoose';
+import { IUser } from './user.interface';
 
 export interface IUserAdded {
 	user: string | Types.ObjectId;
@@ -42,4 +44,8 @@ export interface IPlaceAdded {
 	place: string | Types.ObjectId;
 	name?: string;
 	added_at?: Date;
+}
+
+export interface IReqAuth extends Request {
+	user?: IUser;
 }

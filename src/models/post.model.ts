@@ -148,6 +148,9 @@ export const validateCreatePost = (post: IPost) => {
 		post_type: Joi.string()
 			.valid('group_post', 'share_post', 'individual_post', '')
 			.required(),
+		medias: Joi.array(),
+		friend_tags: Joi.array(),
+		theme: Joi.string(),
 	});
 
 	return schema.validate(post);
