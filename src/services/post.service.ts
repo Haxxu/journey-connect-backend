@@ -12,6 +12,27 @@ class PostService {
 		newPost.__v = undefined;
 		return newPost;
 	}
+
+	static async updatePostById(postId: string, payload: any) {
+		const allowedFields = [
+			'title',
+			'medias',
+			'visibility',
+			'places',
+			'friend_tags',
+		];
+		const updateData: { [key: string]: any } = {};
+		for (const field of allowedFields) {
+			if (payload[field] !== undefined) {
+				updateData[field] = payload[field];
+			}
+		}
+
+		const updatedPost = await Post.findByIdAndUpdate(postId, updateData, {
+			new: true,
+		});
+		return updatedPost;
+	}
 }
 
 export default PostService;

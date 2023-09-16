@@ -29,7 +29,7 @@ export interface IPost extends Document {
 	group?: string | Types.ObjectId;
 	post_type: string; // group_post, individual_post, share_post
 	visibility: string; // private_group, public_group, friend_only, public, private
-	medias: IMedia[];
+	medias: any[];
 	emotions: IEmotionAdded[];
 	comments: ICommentAdded[];
 	shares: IShareAdded[];

@@ -9,7 +9,7 @@ const router = Router();
 router.post('/posts', [userAuth, postController.createPost]);
 
 // [POST] => update post
-router.put('/posts/:id', [userAuth, postController.createPost]);
+router.put('/posts/:id', [userAuth, postController.updatePostById]);
 
 // [POST] => delete post
 router.delete('/posts/:id', [userAuth, postController.deletePostById]);
