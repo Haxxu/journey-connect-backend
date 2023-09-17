@@ -149,6 +149,7 @@ export const validateCreatePost = (post: IPost) => {
 			.valid('group_post', 'share_post', 'individual_post', '')
 			.required(),
 		medias: Joi.array(),
+		places: Joi.array(),
 		friend_tags: Joi.array(),
 		theme: Joi.string(),
 	});
