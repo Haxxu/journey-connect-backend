@@ -6,19 +6,21 @@ export interface IWorkPlace {
 	name: string;
 	start_year?: number;
 	end_year?: number;
+	city?: string;
 }
 
 export interface ISchool {
 	name: string;
 	start_year?: number;
 	end_year?: number;
+	city?: string;
 }
 
 export interface ILivingPlace {
 	name?: string;
 	start_year?: number;
 	end_year?: number;
-	city?: number;
+	city?: string;
 }
 
 export interface IBlocked {
@@ -32,6 +34,7 @@ export interface IRelationship {
 
 export interface IUser extends Document {
 	email?: string;
+	description?: string;
 	username?: string;
 	password: string;
 	first_name: string;

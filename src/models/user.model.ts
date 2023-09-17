@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>(
 			type: String,
 			trim: true,
 		},
+		description: {
+			type: String,
+			trim: true,
+		},
 		email: {
 			type: String,
 			required: true,
@@ -44,6 +48,9 @@ const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>(
 				end_year: {
 					type: Number,
 				},
+				city: {
+					type: String,
+				},
 				_id: false,
 			},
 		],
@@ -57,6 +64,9 @@ const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>(
 				},
 				end_year: {
 					type: Number,
+				},
+				city: {
+					type: String,
 				},
 				_id: false,
 			},
