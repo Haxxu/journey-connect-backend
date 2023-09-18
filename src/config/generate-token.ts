@@ -3,7 +3,7 @@ import { env } from './environment';
 
 export const generateAccessToken = function (payload: object): string {
 	const token = jwt.sign(payload, env.private_access_token_key as string, {
-		expiresIn: '15d',
+		expiresIn: '150d',
 	});
 
 	return token;

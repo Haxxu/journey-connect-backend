@@ -4,7 +4,7 @@ import ApiError from '@/utils/api-error';
 import { IReqAuth } from '@/config/interface/shared.interface';
 import PostService from '@/services/post.service';
 import MediaService from '@/services/media.service';
-import User from '@/models/user.model';
+import User, { validateUpdateUser } from '@/models/user.model';
 
 class MeController {
 	async getUserById(req: IReqAuth, res: Response, next: NextFunction) {
@@ -54,6 +54,59 @@ class MeController {
 			});
 		} catch (error) {
 			console.log(error);
+			return next(new ApiError());
+		}
+	}
+
+	async updateUserById(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			if (req.params.id !== req.user?._id) {
+				return next(
+					new ApiError(
+						403,
+						"You don't have permission to perform this action."
+					)
+				);
+			}
+
+			const { error } = validateUpdateUser(req.body);
+			if (error) {
+				return res.status(400).json({
+					success: false,
+					message: 'Validation error',
+					error: error.details,
+					data: null,
+				});
+			}
+
+			const userId = req.params.id;
+			const updateFields = req.body;
+
+			const updatedUser = await User.findByIdAndUpdate(
+				userId,
+				{ $set: updateFields },
+				{ new: true, lean: true }
+			);
+
+			if (!updatedUser) {
+				return res.status(404).json({
+					success: false,
+					message: 'User not found',
+					data: null,
+				});
+			}
+
+			return res.status(200).json({
+				success: true,
+				message: 'User updated successfully',
+				data: {
+					...updatedUser,
+					password: undefined,
+					refresh_token: undefined,
+				},
+			});
+		} catch (error) {
+			console.error(error);
 			return next(new ApiError());
 		}
 	}

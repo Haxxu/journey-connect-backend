@@ -15,8 +15,14 @@ class AuthController {
 	async register(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { error } = validateCreateUser(req.body);
+
 			if (error) {
-				return next(new ApiError(400, error.details[0].message));
+				return res.status(400).json({
+					success: false,
+					message: 'Validation error',
+					error: error.details,
+					data: null,
+				});
 			}
 
 			const user = await User.findOne({ email: req.body.email });

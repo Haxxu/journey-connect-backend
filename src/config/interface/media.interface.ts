@@ -8,4 +8,5 @@ export interface IMedia {
 	size?: number;
 	verified?: boolean;
 	owner?: Types.ObjectId | string;
+	id?: Types.ObjectId | string;
 }

@@ -193,6 +193,9 @@ const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>(
 					trim: true,
 				},
 				url: { type: String, trim: true },
+				id: {
+					type: String,
+				},
 				_id: false,
 			},
 		],
@@ -284,6 +287,45 @@ export const validateCreateUser = (user: IUser) => {
 		last_name: Joi.string().required(),
 		birth_date: Joi.date().iso().max('now').required(),
 		gender: Joi.string().trim().valid('male', 'female', 'other').required(),
+	});
+
+	return schema.validate(user);
+};
+
+export const validateUpdateUser = (user: IUser) => {
+	const schema = Joi.object({
+		username: Joi.string().trim(),
+		description: Joi.string().trim(),
+		first_name: Joi.string(),
+		last_name: Joi.string(),
+		birth_date: Joi.date().iso().max('now'),
+		gender: Joi.string().trim().valid('male', 'female', 'other'),
+		work_places: Joi.array().items(
+			Joi.object({
+				name: Joi.string().trim(),
+				start_year: Joi.number().allow(null),
+				end_year: Joi.number().allow(null),
+				city: Joi.string().trim(),
+			})
+		),
+		schools: Joi.array().items(
+			Joi.object({
+				name: Joi.string().trim(),
+				start_year: Joi.number().allow(null),
+				end_year: Joi.number().allow(null),
+				city: Joi.string().trim(),
+			})
+		),
+		living_places: Joi.array().items(
+			Joi.object({
+				name: Joi.string().trim(),
+				start_year: Joi.number().allow(null),
+				end_year: Joi.number().allow(null),
+				city: Joi.string().trim(),
+			})
+		),
+		phone: Joi.string().trim(),
+		country: Joi.string().trim(),
 	});
 
 	return schema.validate(user);
