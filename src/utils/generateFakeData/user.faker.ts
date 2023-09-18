@@ -121,13 +121,13 @@ export async function addUserToGroup() {
 		const usersToAdd = usersToBeAdded.slice(0, numberOfUsersToAdd);
 
 		for (const user of usersToAdd) {
-			group.members.push({
+			group.members?.push({
 				user: user._id,
 				added_at: new Date(),
 				type: 'member',
 			});
 
-			user.joined_groups.push({
+			user.joined_groups?.push({
 				group: group._id,
 				added_at: new Date(),
 			});

@@ -39,25 +39,26 @@ export interface IUser extends Document {
 	password: string;
 	first_name: string;
 	last_name: string;
-	birth_date: Date;
+	birth_date?: Date;
 	gender: string;
-	work_places: IWorkPlace[];
-	schools: ISchool[];
-	living_places: ILivingPlace[];
+	work_places?: IWorkPlace[];
+	schools?: ISchool[];
+	living_places?: ILivingPlace[];
 	friends: IUserAdded[];
-	blocked: IBlocked;
-	joined_groups: IGroupAdded[];
-	friend_requests: IUserAdded[];
-	add_friend_requests: IUserAdded[];
-	relationships: IRelationship[];
+	blocked?: IBlocked;
+	joined_groups?: IGroupAdded[];
+	friend_requests?: IUserAdded[];
+	add_friend_requests?: IUserAdded[];
+	relationships?: IRelationship[];
 	medias: IMedia[];
 	phone?: string;
 	country?: string;
 	registered_at: Date;
 	avatar?: string;
 	background?: string;
-	posts: IPostAdded[];
+	posts?: IPostAdded[];
 	refresh_token?: any;
+	privacy?: any;
 	_doc?: object;
 }
 

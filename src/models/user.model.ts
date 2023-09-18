@@ -176,9 +176,11 @@ const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>(
 		],
 		phone: {
 			type: String,
+			default: '',
 		},
 		country: {
 			type: String,
+			default: '',
 		},
 		registered_at: {
 			type: Date,
@@ -210,6 +212,23 @@ const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>(
 				_id: false,
 			},
 		],
+		privacy: {
+			work_places: {
+				visibility: { type: String, default: 'private' },
+			},
+			schools: {
+				visibility: { type: String, default: 'private' },
+			},
+			living_places: {
+				visibility: { type: String, default: 'private' },
+			},
+			phone: {
+				visibility: { type: String, default: 'private' },
+			},
+			birth_date: {
+				visibility: { type: String, default: 'private' },
+			},
+		},
 		refresh_token: [
 			{
 				token: {

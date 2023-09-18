@@ -23,7 +23,7 @@ class MeController {
 
 			return res.status(200).json({
 				success: true,
-				message: 'Create post successfully',
+				message: 'Get info successfully',
 				data: user,
 			});
 		} catch (error) {
