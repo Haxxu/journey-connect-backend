@@ -42,7 +42,10 @@ class PostService {
 			const posts = await Post.find({
 				owner: userId,
 				visibility: { $in: visibilityOptions },
-			}).sort({ createdAt: -1 });
+			})
+				.populate('owner', '_id first_name last_name avatar medias')
+				.sort({ createdAt: -1 })
+				.exec();
 
 			return posts;
 		} catch (error: any) {

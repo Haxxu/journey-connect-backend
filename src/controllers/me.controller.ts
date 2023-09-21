@@ -96,9 +96,11 @@ class MeController {
 
 	async getPosts(req: IReqAuth, res: Response, next: NextFunction) {
 		try {
-			const posts = await Post.find({ owner: req.user?._id }).sort({
-				createdAt: -1,
-			});
+			const posts = await Post.find({ owner: req.user?._id })
+				.populate('owner', '_id first_name last_name avatar medias')
+				.sort({
+					createdAt: -1,
+				});
 
 			return res.status(200).json({
 				success: true,
