@@ -146,7 +146,7 @@ const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>(
 				_id: false,
 			},
 		],
-		friend_requests: [
+		sent_friend_requests: [
 			{
 				user: {
 					type: mongoose.Schema.Types.ObjectId,
@@ -160,7 +160,7 @@ const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>(
 				_id: false,
 			},
 		],
-		add_friend_requests: [
+		received_friend_requests: [
 			{
 				user: {
 					type: mongoose.Schema.Types.ObjectId,

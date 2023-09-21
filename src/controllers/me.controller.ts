@@ -5,6 +5,7 @@ import { IReqAuth } from '@/config/interface/shared.interface';
 import PostService from '@/services/post.service';
 import MediaService from '@/services/media.service';
 import User from '@/models/user.model';
+import Post from '@/models/post.model';
 
 class MeController {
 	async getInfo(req: IReqAuth, res: Response, next: NextFunction) {
@@ -86,6 +87,23 @@ class MeController {
 				success: true,
 				message: `Update ${req.query.type || 'image'} successfully`,
 				data: user,
+			});
+		} catch (error) {
+			console.log(error);
+			return next(new ApiError());
+		}
+	}
+
+	async getPosts(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			const posts = await Post.find({ owner: req.user?._id }).sort({
+				createdAt: -1,
+			});
+
+			return res.status(200).json({
+				success: true,
+				message: 'Get posts successfully',
+				data: posts,
 			});
 		} catch (error) {
 			console.log(error);

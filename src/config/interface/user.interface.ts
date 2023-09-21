@@ -47,8 +47,8 @@ export interface IUser extends Document {
 	friends?: IUserAdded[];
 	blocked?: IBlocked;
 	joined_groups?: IGroupAdded[];
-	friend_requests?: IUserAdded[];
-	add_friend_requests?: IUserAdded[];
+	sent_friend_requests?: IUserAdded[];
+	received_friend_requests?: IUserAdded[];
 	relationships?: IRelationship[];
 	medias?: any[];
 	phone?: string;
@@ -59,6 +59,8 @@ export interface IUser extends Document {
 	posts?: IPostAdded[];
 	refresh_token?: any;
 	privacy?: any;
+	createdAt?: any;
+	updatedAt?: any;
 	_doc?: object;
 }
 

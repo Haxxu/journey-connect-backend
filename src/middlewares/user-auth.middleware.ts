@@ -45,7 +45,7 @@ const userAuth = async (req: IReqAuth, res: Response, next: NextFunction) => {
 			.lean();
 		if (!user) {
 			return res.status(400).json({
-				message: 'User does not exist.',
+				message: 'Failed Authentication. User does not exist.',
 				success: false,
 				data: null,
 			});

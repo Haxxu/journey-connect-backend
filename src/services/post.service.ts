@@ -33,6 +33,24 @@ class PostService {
 		});
 		return updatedPost;
 	}
+
+	static async getPostsByUserId(
+		userId: string,
+		visibilityOptions: string[] = ['public']
+	) {
+		try {
+			const posts = await Post.find({
+				owner: userId,
+				visibility: { $in: visibilityOptions },
+			}).sort({ createdAt: -1 });
+
+			return posts;
+		} catch (error: any) {
+			throw new Error(
+				'Error fetching posts by user ID: ' + error.message
+			);
+		}
+	}
 }
 
 export default PostService;

@@ -35,5 +35,7 @@ export interface IPost extends Document {
 	shares: IShareAdded[];
 	friend_tags: IFriendTag[];
 	places: IPlaceAdded[];
+	createdAt?: any;
+	updatedAt?: any;
 	_doc: object;
 }

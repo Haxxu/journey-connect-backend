@@ -31,7 +31,6 @@ class MeController {
 			if (req.user?._id !== user?._id.toString()) {
 				if (user.privacy?.work_places?.visibility === 'private') {
 					user.work_places = undefined;
-					console.log('hello');
 				}
 				if (user.privacy?.schools?.visibility === 'private') {
 					user.schools = undefined;

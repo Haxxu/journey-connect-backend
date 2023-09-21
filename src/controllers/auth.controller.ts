@@ -85,7 +85,15 @@ class AuthController {
 		try {
 			const user = await User.findOne({ email: req.body.email });
 			if (!user) {
-				return res.status(400).json(ApiResPayload);
+				return res
+					.status(400)
+					.json(
+						ApiResPayload(
+							null,
+							false,
+							'Invalid account or password'
+						)
+					);
 			}
 			const isValidPassword = await bcrypt.compare(
 				req.body.password,
