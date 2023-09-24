@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
 import Joi from 'joi';
 
-import { IEmontion } from '@configs/interface/emotion.interface';
+import { IEmotion } from '@configs/interface/emotion.interface';
 
-type EmotionModel = mongoose.Model<IEmontion, {}, {}>;
+type EmotionModel = mongoose.Model<IEmotion, {}, {}>;
 
-const emotionSchema = new mongoose.Schema<IEmontion, EmotionModel, {}>(
+const emotionSchema = new mongoose.Schema<IEmotion, EmotionModel, {}>(
 	{
 		owner: {
 			type: mongoose.Schema.Types.ObjectId,
@@ -13,7 +13,8 @@ const emotionSchema = new mongoose.Schema<IEmontion, EmotionModel, {}>(
 			required: true,
 		},
 		type: {
-			type: String, // like, love, hear, smile, sad, angry
+			type: String, // like, love, heart, smile, sad, angry
+			default: 'none',
 		},
 		context_type: {
 			type: String,
@@ -25,6 +26,32 @@ const emotionSchema = new mongoose.Schema<IEmontion, EmotionModel, {}>(
 	{ timestamps: true }
 );
 
-const Emotion = mongoose.model<IEmontion>('Emotion', emotionSchema);
+const Emotion = mongoose.model<IEmotion>('Emotion', emotionSchema);
+
+export const validateCreateEmotion = (emotion: IEmotion) => {
+	const schema = Joi.object({
+		type: Joi.string().valid(
+			'like',
+			'love',
+			'heart',
+			'smile',
+			'sad',
+			'angry',
+			'none'
+		),
+		context_type: Joi.string().valid('post'),
+		context_id: Joi.string(),
+	});
+
+	return schema.validate(emotion);
+};
+export const validateDeleteEmotion = (emotion: IEmotion) => {
+	const schema = Joi.object({
+		context_type: Joi.string().valid('post'),
+		context_id: Joi.string(),
+	});
+
+	return schema.validate(emotion);
+};
 
 export default Emotion;

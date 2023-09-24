@@ -6,7 +6,7 @@ export interface IContext {
 	owner: Types.ObjectId;
 }
 
-export interface IEmontion extends Document {
+export interface IEmotion extends Document {
 	owner: string | Types.ObjectId;
 	type: string;
 	context_type: string;
