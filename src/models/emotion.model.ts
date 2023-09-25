@@ -13,7 +13,7 @@ const emotionSchema = new mongoose.Schema<IEmotion, EmotionModel, {}>(
 			required: true,
 		},
 		type: {
-			type: String, // like, love, heart, smile, sad, angry
+			type: String, // like, heart, haha, wow, sad, angry
 			default: 'none',
 		},
 		context_type: {
@@ -34,10 +34,10 @@ export const validateCreateEmotion = (emotion: IEmotion) => {
 			'like',
 			'love',
 			'heart',
-			'smile',
+			'haha',
+			'wow',
 			'sad',
-			'angry',
-			'none'
+			'angry'
 		),
 		context_type: Joi.string().valid('post'),
 		context_id: Joi.string(),

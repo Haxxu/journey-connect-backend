@@ -111,7 +111,7 @@ class EmotionService {
 			const count: Record<string, number> = {
 				all: emotions.length,
 			};
-			const types = ['like', 'love', 'heart', 'smile', 'sad', 'angry'];
+			const types = ['like', 'wow', 'heart', 'haha', 'sad', 'angry'];
 
 			types.forEach((type) => {
 				const typeCount = emotions.filter(

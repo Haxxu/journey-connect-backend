@@ -36,9 +36,9 @@ export async function generateFakeEmotions(count: number): Promise<string[]> {
 			emotion_date: new Date(),
 			type: faker.helpers.arrayElement([
 				'like',
-				'love',
+				'wow',
 				'heart',
-				'smile',
+				'haha',
 				'sad',
 				'angry',
 			]),
