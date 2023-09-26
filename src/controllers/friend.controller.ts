@@ -70,6 +70,95 @@ class FriendController {
 			return next(new ApiError());
 		}
 	}
+
+	async getSentFriendRequests(
+		req: IReqAuth,
+		res: Response,
+		next: NextFunction
+	) {
+		try {
+			const user = await FriendService.getSentFriendRequests(
+				req.user?._id
+			);
+			if (!user) {
+				return res.status(404).json({
+					success: false,
+					data: null,
+					message: 'User not found',
+				});
+			}
+
+			return res.status(200).json({
+				success: true,
+				data: user.sent_friend_requests,
+				message: 'Get sent friend requests successfully',
+			});
+		} catch (error) {
+			console.log(error);
+			return next(new ApiError());
+		}
+	}
+
+	async getReceivedFriendRequests(
+		req: IReqAuth,
+		res: Response,
+		next: NextFunction
+	) {
+		try {
+			const user = await FriendService.getReceivedFriendRequests(
+				req.user?._id
+			);
+			if (!user) {
+				return res.status(404).json({
+					success: false,
+					data: null,
+					message: 'User not found',
+				});
+			}
+
+			return res.status(200).json({
+				success: true,
+				data: user.received_friend_requests,
+				message: 'Get received friend requests successfully',
+			});
+		} catch (error) {
+			console.log(error);
+			return next(new ApiError());
+		}
+	}
+
+	async validateFriendRequest(
+		req: IReqAuth,
+		res: Response,
+		next: NextFunction
+	) {
+		try {
+			const result = await FriendService.validateFriendRequest(
+				req.user?._id,
+				req.body.user,
+				req.body.type
+			);
+			return res.status(result.success ? 200 : 400).json(result);
+		} catch (error) {
+			console.log(error);
+			return next(new ApiError());
+		}
+	}
+
+	async unfriend(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			await FriendService.unfriend(req.user?._id, req.body.user);
+
+			return res.status(200).json({
+				success: true,
+				data: null,
+				message: 'Unfriend successfully',
+			});
+		} catch (error) {
+			console.log(error);
+			return next(new ApiError());
+		}
+	}
 }
 
 export default new FriendController();

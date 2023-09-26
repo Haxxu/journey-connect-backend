@@ -29,4 +29,31 @@ router.get('/me/friends', [userAuth, friendController.getMyFriends]);
 // [POST] => add friend
 router.post('/me/add-friend', [userAuth, friendController.addFriend]);
 
+// [GET] => get sent friend requests
+router.get('/me/sent-friend-requests', [
+	userAuth,
+	friendController.getSentFriendRequests,
+]);
+
+// [GET] => get received friend requests
+router.get('/me/received-friend-requests', [
+	userAuth,
+	friendController.getReceivedFriendRequests,
+]);
+
+// [PUT] => get received friend requests
+router.put('/me/friend-request', [
+	userAuth,
+	friendController.validateFriendRequest,
+]);
+
+// [PUT] => get received friend requests
+router.put('/me/friend-request', [
+	userAuth,
+	friendController.validateFriendRequest,
+]);
+
+// [DELETE] => Unfriend
+router.delete('/me/unfriend', [userAuth, friendController.unfriend]);
+
 export default router;
