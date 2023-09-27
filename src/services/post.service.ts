@@ -54,6 +54,53 @@ class PostService {
 			);
 		}
 	}
+
+	static async getFeedPosts(
+		userId: string,
+		userFriendIds: string[] = [],
+		page: number = 0,
+		pageSize: number = 10
+	) {
+		try {
+			const posts = await Post.find({
+				$or: [
+					{ visibility: 'public' },
+					{
+						$and: [
+							{ visibility: 'friend_only' },
+							{ owner: { $in: userFriendIds } },
+						],
+					},
+					{
+						owner: userId,
+					},
+				],
+			})
+				.skip(pageSize * page)
+				.limit(pageSize)
+				.sort({ created_at: -1 })
+				.populate([
+					{
+						path: 'owner',
+						select: '_id first_name last_name avatar medias',
+					},
+					{
+						path: 'inner_post',
+						populate: {
+							path: 'owner',
+							select: '_id first_name last_name avatar medias',
+						},
+					},
+				])
+				.exec();
+
+			return posts;
+		} catch (error: any) {
+			throw new Error(
+				'Error fetching feed posts by user ID: ' + error.message
+			);
+		}
+	}
 }
 
 export default PostService;

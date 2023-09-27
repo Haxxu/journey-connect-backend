@@ -149,6 +149,7 @@ export async function generateFakeSharePosts(count: number): Promise<string[]> {
 			{
 				$push: {
 					posts: {
+						user: ownerId,
 						post: fakePost._id,
 						added_at: new Date(),
 					},
