@@ -5,6 +5,9 @@ import userAuth from '@/middlewares/user-auth.middleware';
 
 const router = Router();
 
+// [GET] => get feed posts
+router.get('/posts/feed', [userAuth, postController.getFeedPosts]);
+
 // [POST] => create post
 router.post('/posts', [userAuth, postController.createPost]);
 

@@ -167,6 +167,19 @@ class PostController {
 			return next(new ApiError());
 		}
 	}
+
+	async getFeedPosts(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			return res.status(200).json({
+				success: true,
+				message: 'Get feed posts successfully',
+				data: null,
+			});
+		} catch (error) {
+			console.log(error);
+			return next(new ApiError());
+		}
+	}
 }
 
 export default new PostController();
