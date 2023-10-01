@@ -56,4 +56,7 @@ router.put('/me/friend-request', [
 // [DELETE] => Unfriend
 router.delete('/me/unfriend', [userAuth, friendController.unfriend]);
 
+// [GET] => Get mutal friends
+router.get('/me/mutual-friends', [userAuth, friendController.getMutualFriends]);
+
 export default router;

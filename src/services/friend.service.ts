@@ -123,19 +123,38 @@ class FriendService {
 		}
 	}
 
-	static async getReceivedFriendRequests(userId: string) {
+	static async getReceivedFriendRequestsInfo(userId: string) {
 		try {
 			const user = await User.findOne({ _id: userId })
 				.populate(
 					'received_friend_requests.user',
-					'_id first_name last_name avatar medias'
+					'_id first_name last_name avatar medias friends'
 				)
 				.lean();
 
-			return user;
+			return { received_friend_requests: user?.received_friend_requests };
 		} catch (error: any) {
 			console.error('Error get received friend requests.', error);
 			throw new Error('Error get received friend requests.');
+		}
+	}
+
+	static async getMutualFriends(
+		meFriends: string[] = [],
+		userFriends: string[] = []
+	) {
+		try {
+			const mutual_friends = meFriends.filter((id) =>
+				userFriends.includes(id)
+			);
+			const mutualFriends = await User.find({
+				_id: { $in: mutual_friends },
+			}).select('_id first_name last_name avatar medias friends');
+
+			return mutualFriends;
+		} catch (error) {
+			console.error('Error get mutual friends', error);
+			throw new Error('Error get mutual friends');
 		}
 	}
 

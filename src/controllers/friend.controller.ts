@@ -105,20 +105,14 @@ class FriendController {
 		next: NextFunction
 	) {
 		try {
-			const user = await FriendService.getReceivedFriendRequests(
-				req.user?._id
-			);
-			if (!user) {
-				return res.status(404).json({
-					success: false,
-					data: null,
-					message: 'User not found',
-				});
-			}
+			let { received_friend_requests } =
+				await FriendService.getReceivedFriendRequestsInfo(
+					req.user?._id
+				);
 
 			return res.status(200).json({
 				success: true,
-				data: user.received_friend_requests,
+				data: { received_friend_requests },
 				message: 'Get received friend requests successfully',
 			});
 		} catch (error) {
@@ -153,6 +147,26 @@ class FriendController {
 				success: true,
 				data: null,
 				message: 'Unfriend successfully',
+			});
+		} catch (error) {
+			console.log(error);
+			return next(new ApiError());
+		}
+	}
+
+	async getMutualFriends(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			const user = await User.findOne({ _id: req.query?.userId });
+
+			const mutual_friends = await FriendService.getMutualFriends(
+				req.user?.friends?.map((item) => item.user.toString()),
+				user?.friends?.map((item) => item.user.toString())
+			);
+
+			return res.status(200).json({
+				success: true,
+				data: { mutual_friends },
+				message: 'Get mutual friends successfully',
 			});
 		} catch (error) {
 			console.log(error);
