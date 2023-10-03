@@ -22,6 +22,11 @@ class PostController {
 			req.body.owner = req.user?._id;
 			const newPost = await PostService.createNewPost(req.body);
 
+			await newPost.populate(
+				'owner',
+				'_id first_name last_name avatar medias'
+			);
+
 			await User.findOneAndUpdate(
 				{ _id: req.user?._id },
 				{

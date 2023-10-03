@@ -64,6 +64,7 @@ class PostService {
 		try {
 			const posts = await Post.find({
 				$or: [
+					{ owner: userId },
 					{ visibility: 'public' },
 					{
 						$and: [
@@ -71,14 +72,11 @@ class PostService {
 							{ owner: { $in: userFriendIds } },
 						],
 					},
-					{
-						owner: userId,
-					},
 				],
 			})
 				.skip(pageSize * page)
 				.limit(pageSize)
-				.sort({ created_at: -1 })
+				.sort({ createdAt: -1 })
 				.populate([
 					{
 						path: 'owner',
