@@ -53,8 +53,17 @@ router.put('/me/friend-request', [
 	friendController.validateFriendRequest,
 ]);
 
+// [GET] => get friend status
+router.get('/me/friend-status', [userAuth, friendController.checkFriendStatus]);
+
 // [DELETE] => Unfriend
 router.delete('/me/unfriend', [userAuth, friendController.unfriend]);
+
+// [DELETE] => Cancel sent friend request
+router.delete('/me/cancel-friend-request', [
+	userAuth,
+	friendController.cancelFriendRequest,
+]);
 
 // [GET] => Get mutal friends
 router.get('/me/mutual-friends', [userAuth, friendController.getMutualFriends]);

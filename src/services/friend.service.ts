@@ -108,6 +108,30 @@ class FriendService {
 		}
 	}
 
+	static async cancelFriendRequest(ownerId: string, userId: string) {
+		try {
+			const session = mongoose.startSession();
+			(await session).startTransaction();
+
+			await User.findOneAndUpdate(
+				{ _id: ownerId },
+				{ $pull: { sent_friend_requests: { user: userId } } }
+			);
+
+			await User.findOneAndUpdate(
+				{ _id: userId },
+				{ $pull: { received_friend_requests: { user: ownerId } } }
+			);
+
+			(await session).commitTransaction();
+
+			(await session).endSession();
+		} catch (error: any) {
+			console.error('Error cancel friend request.', error);
+			throw new Error('Error cancel friend request.');
+		}
+	}
+
 	static async getSentFriendRequests(userId: string) {
 		try {
 			const user = await User.findOne({ _id: userId })

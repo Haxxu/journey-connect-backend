@@ -12,14 +12,10 @@ class FriendController {
 				friend.user.toString()
 			);
 
-			const users = req.body?.users.map((userId: string) =>
-				friends?.includes(userId)
-			);
-
 			return res.status(200).json({
 				success: true,
 				message: 'Check friends successfully',
-				data: { users },
+				data: friends?.includes(req.query?.userId as string),
 			});
 		} catch (error) {
 			console.log(error);
@@ -112,7 +108,7 @@ class FriendController {
 
 			return res.status(200).json({
 				success: true,
-				data: { received_friend_requests },
+				data: received_friend_requests,
 				message: 'Get received friend requests successfully',
 			});
 		} catch (error) {
@@ -154,6 +150,28 @@ class FriendController {
 		}
 	}
 
+	async cancelFriendRequest(
+		req: IReqAuth,
+		res: Response,
+		next: NextFunction
+	) {
+		try {
+			await FriendService.cancelFriendRequest(
+				req.user?._id,
+				req.body.user
+			);
+
+			return res.status(200).json({
+				success: true,
+				data: null,
+				message: 'Cancel friend request successfully',
+			});
+		} catch (error) {
+			console.log(error);
+			return next(new ApiError());
+		}
+	}
+
 	async getMutualFriends(req: IReqAuth, res: Response, next: NextFunction) {
 		try {
 			const user = await User.findOne({ _id: req.query?.userId });
@@ -167,6 +185,48 @@ class FriendController {
 				success: true,
 				data: { mutual_friends },
 				message: 'Get mutual friends successfully',
+			});
+		} catch (error) {
+			console.log(error);
+			return next(new ApiError());
+		}
+	}
+
+	async checkFriendStatus(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			const userId = req.query?.userId as string;
+
+			let type: 'friend' | 'none' | 'sentFriend' | 'receivedFriend' =
+				'friend';
+
+			if (
+				req.user?.friends?.find(
+					(item) => item.user.toString() === userId
+				)
+			) {
+				type = 'friend';
+			} else {
+				if (
+					req.user?.sent_friend_requests?.find(
+						(item) => item.user.toString() === userId
+					)
+				) {
+					type = 'sentFriend';
+				} else if (
+					req.user?.received_friend_requests?.find(
+						(item) => item.user.toString() === userId
+					)
+				) {
+					type = 'receivedFriend';
+				} else {
+					type = 'none';
+				}
+			}
+
+			return res.status(200).json({
+				success: true,
+				message: 'Check friend status successfully',
+				data: type,
 			});
 		} catch (error) {
 			console.log(error);
