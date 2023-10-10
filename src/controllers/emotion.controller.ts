@@ -25,19 +25,19 @@ class EmotionController {
 				owner: req.user?._id,
 			});
 
-			if (req.body.context_type === 'post') {
-				let isSuccess = await EmotionService.upsertEmotionInPost(
-					emotion._id.toString(),
-					req.body.context_id
-				);
-				if (!isSuccess) {
-					return res.status(404).json({
-						success: false,
-						message: 'Post not found',
-						data: null,
-					});
-				}
-			}
+			// if (req.body.context_type === 'post') {
+			// 	let isSuccess = await EmotionService.upsertEmotionInPost(
+			// 		emotion._id.toString(),
+			// 		req.body.context_id
+			// 	);
+			// 	if (!isSuccess) {
+			// 		return res.status(404).json({
+			// 			success: false,
+			// 			message: 'Post not found',
+			// 			data: null,
+			// 		});
+			// 	}
+			// }
 
 			return res.status(200).json({
 				success: true,
@@ -78,21 +78,19 @@ class EmotionController {
 				});
 			}
 
-			if (req.body.context_type === 'post') {
-				console.log('delet post');
-
-				let isSuccess = await EmotionService.deleteEmotionInPost(
-					emotion._id.toString(),
-					req.body.context_id
-				);
-				if (!isSuccess) {
-					return res.status(404).json({
-						success: false,
-						message: 'Delete emotion failed. Post not found',
-						data: null,
-					});
-				}
-			}
+			// if (req.body.context_type === 'post') {
+			// 	let isSuccess = await EmotionService.deleteEmotionInPost(
+			// 		emotion._id.toString(),
+			// 		req.body.context_id
+			// 	);
+			// 	if (!isSuccess) {
+			// 		return res.status(404).json({
+			// 			success: false,
+			// 			message: 'Delete emotion failed. Post not found',
+			// 			data: null,
+			// 		});
+			// 	}
+			// }
 
 			return res.status(200).json({
 				success: true,
