@@ -15,6 +15,10 @@ const commentSchema = new mongoose.Schema<IComment, CommentModel, {}>(
 		context_id: {
 			type: String,
 		},
+		context_owner: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'User',
+		},
 		context_type: {
 			type: String,
 			default: 'post',

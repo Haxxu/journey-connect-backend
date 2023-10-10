@@ -3,6 +3,7 @@ import { Document, Types } from 'mongoose';
 export interface IComment extends Document {
 	owner?: string | Types.ObjectId;
 	context_id?: string | Types.ObjectId;
+	context_owner?: string | Types.ObjectId;
 	context_type?: string; // post
 	post?: string | Types.ObjectId;
 	content?: string;
