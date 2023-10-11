@@ -11,6 +11,7 @@ import CommentService, {
 	ICreateReplyComment,
 } from '@/services/comment.service';
 import User from '@/models/user.model';
+import { io } from '@/index';
 
 class CommentController {
 	async createComment(req: IReqAuth, res: Response, next: NextFunction) {
@@ -45,6 +46,9 @@ class CommentController {
 			const comment = await CommentService.createComment(
 				<ICreateComment>payload
 			);
+
+			// Socket.io
+			io.to(`${context_id}`).emit('createComment', comment);
 
 			return res.status(200).json({
 				success: true,
