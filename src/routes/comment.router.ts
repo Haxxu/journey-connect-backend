@@ -5,6 +5,9 @@ import commentController from '@/controllers/comment.controller';
 
 const router = Router();
 
+// [POST] => reply comment
+router.post('/comments/reply', [userAuth, commentController.replyComment]);
+
 // [POST] => create comment
 router.post('/comments', [userAuth, commentController.createComment]);
 
@@ -14,7 +17,7 @@ router.patch('/comments/:id', [userAuth, commentController.updateCommentById]);
 // [DELETE] => delete comment by id
 router.delete('/comments/:id', [userAuth, commentController.deleteCommentById]);
 
-// [GET] => get emotions
-// router.get('/emotions', [userAuth, commentController.getEmotions]);
+// [GET] => get comments ?context_id
+router.get('/comments', [userAuth, commentController.getComments]);
 
 export default router;

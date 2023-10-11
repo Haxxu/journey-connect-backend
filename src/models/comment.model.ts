@@ -54,17 +54,8 @@ export const validateReplyComment = (comment: IComment) => {
 		context_id: Joi.string().required(),
 		context_type: Joi.string().default('post'),
 		content: Joi.string().required(),
-		comment_root: Joi.string().required(),
+		root_comment: Joi.string().required(),
 		reply_user: Joi.string().required(),
-	});
-
-	return schema.validate(comment);
-};
-
-export const validateDeleteComment = (comment: IComment) => {
-	const schema = Joi.object({
-		context_type: Joi.string().valid('post'),
-		context_id: Joi.string(),
 	});
 
 	return schema.validate(comment);
