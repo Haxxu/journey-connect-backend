@@ -111,6 +111,12 @@ class CommentController {
 				<ICreateReplyComment>payload
 			);
 
+			// Socket.io
+			io.to(`${newReplyComment.context_id}`).emit(
+				'replyComment',
+				newReplyComment
+			);
+
 			return res.status(200).json({
 				success: true,
 				data: newReplyComment,
@@ -144,6 +150,12 @@ class CommentController {
 				req.params.id,
 				req.user?._id,
 				content
+			);
+
+			// Socket.io
+			io.to(`${updated_comment?.context_id}`).emit(
+				'updateComment',
+				updated_comment
 			);
 
 			return res.status(200).json({
