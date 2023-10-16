@@ -209,6 +209,12 @@ class CommentController {
 				});
 			}
 
+			// Socket.io
+			io.to(`${deleted_comment?.context_id}`).emit(
+				'deleteComment',
+				deleted_comment
+			);
+
 			return res.status(200).json({
 				success: true,
 				data: deleted_comment,
