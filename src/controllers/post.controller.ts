@@ -16,16 +16,37 @@ class PostController {
 				return next(new ApiError(400, error.details[0].message));
 			}
 
-			const addMediaIds = req.body.medias.map((item: any) => item.id);
-			await MediaService.verifyFiles(addMediaIds, req.user?._id);
+			if (req.body.post_type !== 'share_post') {
+				const addMediaIds = req.body.medias.map((item: any) => item.id);
+				await MediaService.verifyFiles(addMediaIds, req.user?._id);
+			}
 
 			req.body.owner = req.user?._id;
+
+			if (req.body.post_type === 'share_post') {
+				const inner_post = await Post.findOne({
+					_id: req.body.inner_post,
+				});
+				if (!inner_post) {
+					return next(new ApiError(404, 'Share post not found'));
+				}
+			}
+
 			const newPost = await PostService.createNewPost(req.body);
 
-			await newPost.populate(
-				'owner',
-				'_id first_name last_name avatar medias'
-			);
+			await newPost.populate([
+				{
+					path: 'owner',
+					select: '_id first_name last_name avatar medias',
+				},
+				{
+					path: 'inner_post',
+					populate: {
+						path: 'owner',
+						select: '_id first_name last_name avatar medias',
+					},
+				},
+			]);
 
 			await User.findOneAndUpdate(
 				{ _id: req.user?._id },
@@ -61,9 +82,18 @@ class PostController {
 				});
 			}
 
+			if (req.user?._id !== post.owner?.toString()) {
+				return next(
+					new ApiError(
+						403,
+						"You don't have permission to delete this post"
+					)
+				);
+			}
+
 			const mediaIds = post.medias.map((item: any) => item.id);
 
-			await Post.deleteOne({ _id: req.params.id });
+			const deleted_post = await Post.deleteOne({ _id: req.params.id });
 
 			await MediaService.deleteFiles(mediaIds, req.user?._id);
 
@@ -78,10 +108,23 @@ class PostController {
 				}
 			);
 
+			if (post.post_type === 'share_post') {
+				await Post.findOneAndUpdate(
+					{ _id: post.inner_post },
+					{
+						$pull: {
+							shares: {
+								post: post._id,
+							},
+						},
+					}
+				);
+			}
+
 			return res.status(200).json({
 				success: true,
 				message: 'Delete post successfully',
-				data: null,
+				data: { _id: req.params.id },
 			});
 		} catch (error) {
 			console.log(error);

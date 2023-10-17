@@ -212,7 +212,7 @@ class CommentController {
 			// Socket.io
 			io.to(`${deleted_comment?.context_id}`).emit(
 				'deleteComment',
-				comment
+				deleted_comment
 			);
 
 			return res.status(200).json({

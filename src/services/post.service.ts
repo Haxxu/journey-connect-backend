@@ -10,6 +10,22 @@ class PostService {
 	static async createNewPost(payload: object) {
 		const newPost = await new Post(payload).save();
 		newPost.__v = undefined;
+
+		if (newPost.post_type === 'share_post') {
+			await Post.findOneAndUpdate(
+				{ _id: newPost.inner_post?.toString() },
+				{
+					$push: {
+						shares: {
+							user: newPost.owner?.toString(),
+							post: newPost._id,
+							added_at: new Date(),
+						},
+					},
+				}
+			);
+		}
+
 		return newPost;
 	}
 
@@ -30,7 +46,19 @@ class PostService {
 
 		const updatedPost = await Post.findByIdAndUpdate(postId, updateData, {
 			new: true,
-		}).populate('owner', '_id first_name last_name avatar medias');
+		}).populate([
+			{
+				path: 'owner',
+				select: '_id first_name last_name avatar medias',
+			},
+			{
+				path: 'inner_post',
+				populate: {
+					path: 'owner',
+					select: '_id first_name last_name avatar medias',
+				},
+			},
+		]);
 		return updatedPost;
 	}
 
