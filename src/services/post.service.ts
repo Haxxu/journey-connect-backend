@@ -46,7 +46,19 @@ class PostService {
 
 		const updatedPost = await Post.findByIdAndUpdate(postId, updateData, {
 			new: true,
-		}).populate('owner', '_id first_name last_name avatar medias');
+		}).populate([
+			{
+				path: 'owner',
+				select: '_id first_name last_name avatar medias',
+			},
+			{
+				path: 'inner_post',
+				populate: {
+					path: 'owner',
+					select: '_id first_name last_name avatar medias',
+				},
+			},
+		]);
 		return updatedPost;
 	}
 
