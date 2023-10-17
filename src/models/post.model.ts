@@ -152,6 +152,7 @@ export const validateCreatePost = (post: IPost) => {
 		places: Joi.array(),
 		friend_tags: Joi.array(),
 		theme: Joi.string(),
+		inner_post: Joi.string(),
 	});
 
 	return schema.validate(post);

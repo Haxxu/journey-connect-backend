@@ -10,6 +10,22 @@ class PostService {
 	static async createNewPost(payload: object) {
 		const newPost = await new Post(payload).save();
 		newPost.__v = undefined;
+
+		if (newPost.post_type === 'share_post') {
+			await Post.findOneAndUpdate(
+				{ _id: newPost.inner_post?.toString() },
+				{
+					$push: {
+						shares: {
+							user: newPost.owner?.toString(),
+							post: newPost._id,
+							added_at: new Date(),
+						},
+					},
+				}
+			);
+		}
+
 		return newPost;
 	}
 
