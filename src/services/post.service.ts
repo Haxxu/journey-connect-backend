@@ -71,7 +71,19 @@ class PostService {
 				owner: userId,
 				visibility: { $in: visibilityOptions },
 			})
-				.populate('owner', '_id first_name last_name avatar medias')
+				.populate([
+					{
+						path: 'owner',
+						select: '_id first_name last_name avatar medias',
+					},
+					{
+						path: 'inner_post',
+						populate: {
+							path: 'owner',
+							select: '_id first_name last_name avatar medias',
+						},
+					},
+				])
 				.sort({ createdAt: -1 })
 				.exec();
 
