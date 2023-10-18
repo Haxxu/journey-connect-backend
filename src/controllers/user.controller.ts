@@ -6,7 +6,7 @@ import PostService from '@/services/post.service';
 import MediaService from '@/services/media.service';
 import User, { validateUpdateUser } from '@/models/user.model';
 
-class MeController {
+class UserController {
 	async getUserById(req: IReqAuth, res: Response, next: NextFunction) {
 		try {
 			let selectOption = '';
@@ -109,6 +109,41 @@ class MeController {
 			return next(new ApiError());
 		}
 	}
+
+	async searchUsers(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			const query = (req.query?.query as string).trim();
+
+			if (!query) {
+				return res.status(200).json({
+					success: true,
+					message: 'Search query is empty',
+					data: [],
+				});
+			}
+
+			const users = await User.find({
+				$or: [
+					{ username: { $regex: query, $options: 'i' } },
+					{ email: { $regex: query, $options: 'i' } },
+					{ first_name: { $regex: query, $options: 'i' } },
+					{ last_name: { $regex: query, $options: 'i' } },
+					{ 'work_places.name': { $regex: query, $options: 'i' } },
+					{ 'schools.name': { $regex: query, $options: 'i' } },
+					{ 'living_places.name': { $regex: query, $options: 'i' } },
+				],
+			}).select('_id first_name last_name avatar medias');
+
+			return res.status(200).json({
+				success: true,
+				message: 'Search users successfully',
+				data: users,
+			});
+		} catch (error) {
+			console.error(error);
+			return next(new ApiError());
+		}
+	}
 }
 
-export default new MeController();
+export default new UserController();

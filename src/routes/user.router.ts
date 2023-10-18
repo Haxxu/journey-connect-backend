@@ -7,6 +7,9 @@ import postController from '@/controllers/post.controller';
 
 const router = Router();
 
+// [GET] => search user
+router.get('/users/search', [userAuth, userController.searchUsers]);
+
 // [GET] => get posts by user id
 router.get('/users/:id/posts', [userAuth, postController.getPostsByUserId]);
 
