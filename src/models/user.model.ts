@@ -244,6 +244,10 @@ const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>(
 				},
 			},
 		],
+		role: {
+			type: String,
+			default: 'user', // admin
+		},
 	},
 	{ timestamps: true }
 );
