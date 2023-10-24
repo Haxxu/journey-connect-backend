@@ -4,6 +4,7 @@ import meController from '@controllers/me.controller';
 import userAuth from '@/middlewares/user-auth.middleware';
 import emotionController from '@/controllers/emotion.controller';
 import friendController from '@/controllers/friend.controller';
+import adminAuth from '@/middlewares/admin-auth.middleware';
 
 const router = Router();
 
@@ -67,5 +68,8 @@ router.delete('/me/cancel-friend-request', [
 
 // [GET] => Get mutal friends
 router.get('/me/mutual-friends', [userAuth, friendController.getMutualFriends]);
+
+// [GET] => Get mutal friends
+router.get('/me/is-admin', [adminAuth, meController.isAdmin]);
 
 export default router;

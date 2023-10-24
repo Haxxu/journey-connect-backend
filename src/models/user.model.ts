@@ -1,8 +1,9 @@
-import mongoose from 'mongoose';
+import mongoose, { PaginateModel } from 'mongoose';
 import Joi from 'joi';
 import passwordComplexity from 'joi-password-complexity';
 import jwt from 'jsonwebtoken';
 import { faker } from '@faker-js/faker';
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 import { IUser, IUserMethods } from '@configs/interface/user.interface';
 import { env } from '@/config/environment';
@@ -281,7 +282,12 @@ userSchema.methods.generateRefreshToken = function (): string {
 	});
 };
 
-const User = mongoose.model<IUser, UserModel>('User', userSchema);
+userSchema.plugin(mongoosePaginate);
+
+const User = mongoose.model<IUser, UserModel & PaginateModel<IUser>>(
+	'User',
+	userSchema
+);
 
 export const validateCreateUser = (user: IUser) => {
 	const schema = Joi.object({

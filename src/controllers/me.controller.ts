@@ -112,6 +112,22 @@ class MeController {
 			return next(new ApiError());
 		}
 	}
+
+	async isAdmin(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			if (req.user?.role === 'admin') {
+				return res.status(200).json({
+					success: true,
+					message: 'Is Admin',
+					data: null,
+				});
+			}
+			return next(new ApiError(404, 'You are not an admin'));
+		} catch (error) {
+			console.log(error);
+			return next(new ApiError());
+		}
+	}
 }
 
 export default new MeController();

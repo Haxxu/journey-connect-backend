@@ -1,3 +1,4 @@
+import mongoosePaginate from 'mongoose-paginate-v2';
 import { Request, Response, NextFunction } from 'express';
 
 import ApiError from '@/utils/api-error';
@@ -5,6 +6,7 @@ import { IReqAuth } from '@/config/interface/shared.interface';
 import PostService from '@/services/post.service';
 import MediaService from '@/services/media.service';
 import User, { validateUpdateUser } from '@/models/user.model';
+import UserService from '@/services/user.service';
 
 class UserController {
 	async getUserById(req: IReqAuth, res: Response, next: NextFunction) {
@@ -137,6 +139,21 @@ class UserController {
 			return res.status(200).json({
 				success: true,
 				message: 'Search users successfully',
+				data: users,
+			});
+		} catch (error) {
+			console.error(error);
+			return next(new ApiError());
+		}
+	}
+
+	async getUsers(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			const users = await UserService.getUsers(req.query);
+
+			return res.status(200).json({
+				success: true,
+				message: 'Get users successfully',
 				data: users,
 			});
 		} catch (error) {
