@@ -61,6 +61,7 @@ export interface IUser extends Document {
 	privacy?: any;
 	createdAt?: any;
 	updatedAt?: any;
+	status: 'active' | 'deactive';
 	role?: 'admin' | 'user';
 	_doc?: object;
 }

@@ -161,6 +161,64 @@ class UserController {
 			return next(new ApiError());
 		}
 	}
+
+	async deactiveUser(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			const user = await User.findOne({ _id: req.body.user });
+			if (!user) {
+				return next(new ApiError(404, 'User not found'));
+			}
+
+			let password = user.password;
+
+			if (password[0] !== '!') {
+				password = '!' + password;
+			}
+
+			await User.findByIdAndUpdate(req.body.user, {
+				password: password,
+				status: 'deactive',
+			});
+
+			return res.status(200).json({
+				success: true,
+				message: 'Deactive user successfully',
+				data: null,
+			});
+		} catch (error) {
+			console.error(error);
+			return next(new ApiError());
+		}
+	}
+
+	async activeUser(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			const user = await User.findOne({ _id: req.body.user });
+			if (!user) {
+				return next(new ApiError(404, 'User not found'));
+			}
+
+			let password = user.password;
+
+			if (password[0] === '!') {
+				password = password.slice(1);
+			}
+
+			await User.findByIdAndUpdate(req.body.user, {
+				password: password,
+				status: 'active',
+			});
+
+			return res.status(200).json({
+				success: true,
+				message: 'Active user successfully',
+				data: null,
+			});
+		} catch (error) {
+			console.error(error);
+			return next(new ApiError());
+		}
+	}
 }
 
 export default new UserController();

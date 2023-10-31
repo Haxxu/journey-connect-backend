@@ -14,8 +14,8 @@ import { generateFakeEmotions } from './emotion.faker';
 async function generateFakeData() {
 	// try {
 	// 	const result = await User.updateMany(
-	// 		{ role: { $exists: false } }, // Only update documents that don't have the role field
-	// 		{ $set: { role: 'user' } }
+	// 		{ status: { $exists: false } }, // Only update documents that don't have the role field
+	// 		{ $set: { status: 'active' } }
 	// 	);
 	// 	console.log('Updated', 'documents to set role to "user".');
 	// } catch (err) {
@@ -23,6 +23,7 @@ async function generateFakeData() {
 	// } finally {
 	// 	// Close the database connection if needed
 	// }
+	return;
 	await User.deleteMany();
 	await Group.deleteMany();
 	await Post.deleteMany();

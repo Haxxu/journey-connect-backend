@@ -249,6 +249,10 @@ const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>(
 			type: String,
 			default: 'user', // admin
 		},
+		status: {
+			type: String,
+			default: 'active',
+		},
 	},
 	{ timestamps: true }
 );

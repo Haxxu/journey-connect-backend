@@ -23,6 +23,12 @@ router.put('/users/:id/role', [adminAuth, userController.updateUserById]);
 // [PUT] => update user by id
 router.put('/users/:id', [userAuth, userController.updateUserById]);
 
+// [POST] => deactive user
+router.post('/users/deactive', [adminAuth, userController.deactiveUser]);
+
+// [POST] => active user
+router.post('/users/active', [adminAuth, userController.activeUser]);
+
 // [GET] => get user by filter (admin)
 router.get('/users', [adminAuth, userController.getUsers]);
 
