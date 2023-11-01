@@ -242,6 +242,103 @@ class PostController {
 			return next(new ApiError());
 		}
 	}
+
+	async getSavedPosts(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			let page = Number(req.query?.page) || 0;
+			let pageSize = Number(req.query?.pageSize) || 10;
+
+			const posts = await PostService.getSavedPosts(
+				req.user?._id,
+				req.user?.posts
+					?.map((item) => item.post.toString())
+					.reverse() || [],
+				page,
+				pageSize
+			);
+
+			return res.status(200).json({
+				success: true,
+				message: 'Get saved posts successfully',
+				data: {
+					page,
+					pageSize,
+					data: posts,
+				},
+			});
+		} catch (error) {
+			console.log(error);
+			return next(new ApiError());
+		}
+	}
+
+	async savePost(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			const user = await User.findOne({ _id: req.user?._id });
+			if (!user) {
+				return next(new ApiError(404, 'User not found'));
+			}
+
+			const post = await Post.findOne({ _id: req.body.post });
+			if (!post) {
+				return next(new ApiError(404, 'Post not found'));
+			}
+
+			const index = user.posts
+				?.map((item) => item.post.toString())
+				.indexOf(req.body.post);
+			if (index === -1) {
+				user.posts?.push({
+					post: req.body.post,
+					added_at: new Date(),
+				});
+			}
+
+			await user.save();
+
+			return res.status(200).json({
+				success: true,
+				message: 'Save post successfully',
+				data: null,
+			});
+		} catch (error) {
+			console.log(error);
+			return next(new ApiError());
+		}
+	}
+
+	async unsavePost(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			const user = await User.findOne({ _id: req.user?._id });
+			if (!user) {
+				return next(new ApiError(404, 'User not found'));
+			}
+
+			const post = await Post.findOne({ _id: req.body.post });
+			if (!post) {
+				return next(new ApiError(404, 'Post not found'));
+			}
+
+			const index =
+				user.posts
+					?.map((item) => item.post.toString())
+					.indexOf(req.body.post) || -1;
+			if (index !== -1) {
+				user.posts?.splice(index, 1);
+			}
+
+			await user.save();
+
+			return res.status(200).json({
+				success: true,
+				message: 'Unsave post successfully',
+				data: null,
+			});
+		} catch (error) {
+			console.log(error);
+			return next(new ApiError());
+		}
+	}
 }
 
 export default new PostController();

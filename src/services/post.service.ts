@@ -139,6 +139,56 @@ class PostService {
 			);
 		}
 	}
+
+	static async getSavedPosts(
+		userId: string,
+		postIds: string[] = [],
+		page: number = 0,
+		pageSize: number = 10
+	) {
+		try {
+			const postIdIndexMap = new Map();
+			postIds.forEach((postId, index) => {
+				postIdIndexMap.set(postId, index);
+			});
+
+			const posts = await Post.find({
+				_id: { $in: postIds },
+			})
+				.populate([
+					{
+						path: 'owner',
+						select: '_id first_name last_name avatar medias',
+					},
+					{
+						path: 'inner_post',
+						populate: {
+							path: 'owner',
+							select: '_id first_name last_name avatar medias',
+						},
+					},
+				])
+				.exec();
+
+			// Sort the posts based on their positions in the postIds array
+			posts.sort((postA, postB) => {
+				const indexA = postIdIndexMap.get(postA._id.toString());
+				const indexB = postIdIndexMap.get(postB._id.toString());
+				return indexA - indexB;
+			});
+
+			// Perform pagination and return the sorted posts
+			const startIndex = pageSize * page;
+			const endIndex = startIndex + pageSize;
+			const paginatedPosts = posts.slice(startIndex, endIndex);
+
+			return paginatedPosts;
+		} catch (error: any) {
+			throw new Error(
+				'Error fetching saved posts by user ID: ' + error.message
+			);
+		}
+	}
 }
 
 export default PostService;

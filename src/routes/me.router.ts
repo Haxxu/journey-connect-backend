@@ -5,6 +5,7 @@ import userAuth from '@/middlewares/user-auth.middleware';
 import emotionController from '@/controllers/emotion.controller';
 import friendController from '@/controllers/friend.controller';
 import adminAuth from '@/middlewares/admin-auth.middleware';
+import postController from '@/controllers/post.controller';
 
 const router = Router();
 
@@ -69,7 +70,16 @@ router.delete('/me/cancel-friend-request', [
 // [GET] => Get mutal friends
 router.get('/me/mutual-friends', [userAuth, friendController.getMutualFriends]);
 
-// [GET] => Get mutal friends
+// [GET] => Check is admin
 router.get('/me/is-admin', [adminAuth, meController.isAdmin]);
+
+// [GET] => Get saved posts
+router.get('/me/saved-posts', [adminAuth, postController.getSavedPosts]);
+
+// [POST] => save post
+router.post('/me/posts', [userAuth, postController.savePost]);
+
+// [POST] => unsave post
+router.delete('/me/posts', [userAuth, postController.unsavePost]);
 
 export default router;
