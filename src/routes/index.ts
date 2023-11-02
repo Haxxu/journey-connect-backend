@@ -5,6 +5,7 @@ import meRouter from './me.router';
 import userRouter from './user.router';
 import emotionRouter from './emotion.router';
 import commentRouter from './comment.router';
+import reportRouter from './report.router';
 
 const routes: any = [
 	authRouter,
@@ -14,6 +15,7 @@ const routes: any = [
 	userRouter,
 	emotionRouter,
 	commentRouter,
+	reportRouter,
 ];
 
 export default routes;
