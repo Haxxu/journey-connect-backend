@@ -13,6 +13,7 @@ class ReportService {
 		content: string;
 		reporter: string;
 		reported_user: string;
+		types: string[];
 	}) {
 		const newReport = await new Report({
 			content: payload.content,
@@ -20,6 +21,7 @@ class ReportService {
 			[payload.context_type]: payload.context_id,
 			reported_user: payload.reported_user,
 			reporter: payload.reporter,
+			types: payload.types,
 		}).save();
 		return newReport;
 	}

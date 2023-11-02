@@ -26,6 +26,15 @@ const reportSchema = new mongoose.Schema<IReport, ReportModel, {}>(
 			ref: 'User',
 			required: true,
 		},
+		types: [
+			{
+				type: String,
+			},
+		],
+		status: {
+			type: String,
+			default: 'pending', // accept, decline
+		},
 	},
 	{ timestamps: true }
 );

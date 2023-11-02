@@ -26,6 +26,9 @@ const postSchema = new mongoose.Schema<IPost, PostModel, {}>(
 		},
 		medias: [
 			{
+				title: {
+					type: String,
+				},
 				type: {
 					type: String,
 					trim: true,

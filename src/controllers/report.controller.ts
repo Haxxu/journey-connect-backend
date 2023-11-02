@@ -8,7 +8,7 @@ import { NextFunction, Response } from 'express';
 class ReportController {
 	async report(req: IReqAuth, res: Response, next: NextFunction) {
 		try {
-			const { context_type, context_id, content } = req.body;
+			const { context_type, context_id, content, types } = req.body;
 
 			let context;
 			let reported_user = '';
@@ -32,6 +32,7 @@ class ReportController {
 				context_id,
 				reporter: req.user?._id,
 				reported_user,
+				types,
 			});
 
 			return res.status(200).json({
