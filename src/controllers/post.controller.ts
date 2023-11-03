@@ -193,10 +193,10 @@ class PostController {
 				(item) => item.user.toString() === req.user?._id
 			);
 
-			if (isFriend) {
+			if (isFriend || req.user?.role === 'admin') {
 				visibilityOptions.push('friend_only');
 			}
-			if (user._id === req.user?._id) {
+			if (user._id === req.user?._id || req.user?.role === 'admin') {
 				visibilityOptions.push('private');
 			}
 
