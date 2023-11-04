@@ -82,7 +82,10 @@ class PostController {
 				});
 			}
 
-			if (req.user?._id !== post.owner?.toString()) {
+			if (
+				req.user?._id !== post.owner?.toString() &&
+				req.user?.role !== 'admin'
+			) {
 				return next(
 					new ApiError(
 						403,
@@ -144,7 +147,10 @@ class PostController {
 					data: null,
 				});
 			}
-			if (post.owner?.toString() !== req.user?._id) {
+			if (
+				post.owner?.toString() !== req.user?._id &&
+				req.user?.role !== 'admin'
+			) {
 				return res.status(404).json({
 					success: false,
 					message: "You don't have permission to update this post",

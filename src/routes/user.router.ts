@@ -11,6 +11,9 @@ const router = Router();
 // [GET] => search user
 router.get('/users/search', [userAuth, userController.searchUsers]);
 
+// [GET] => get user info (dashboard admin chart)
+router.get('/users/info', [adminAuth, userController.getUsersInfo]);
+
 // [GET] => get posts by user id
 router.get('/users/:id/posts', [userAuth, postController.getPostsByUserId]);
 

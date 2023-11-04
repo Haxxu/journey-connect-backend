@@ -7,6 +7,25 @@ import PostService from '@/services/post.service';
 import MediaService from '@/services/media.service';
 import User, { validateUpdateUser } from '@/models/user.model';
 import UserService from '@/services/user.service';
+import moment from 'moment';
+
+type AgeGroups = {
+	'0-9': number;
+	'10-19': number;
+	'20-29': number;
+	'30-39': number;
+	'40-49': number;
+	'50-59': number;
+	'60+': number;
+};
+
+type AgeGroupInfo = {
+	count: number;
+	percentage: any;
+};
+
+// Define a type for ageGroupPercentages
+type AgeGroupPercentages = { [key: string]: string | AgeGroupInfo };
 
 class UserController {
 	async getUserById(req: IReqAuth, res: Response, next: NextFunction) {
@@ -140,6 +159,161 @@ class UserController {
 				success: true,
 				message: 'Search users successfully',
 				data: users,
+			});
+		} catch (error) {
+			console.error(error);
+			return next(new ApiError());
+		}
+	}
+
+	async getUsersInfo(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			// Calculate the user created per week, month, and total
+			const now = new Date();
+			const oneWeekAgo = new Date(
+				now.getTime() - 7 * 24 * 60 * 60 * 1000
+			);
+			const oneMonthAgo = new Date(
+				now.getTime() - 30 * 24 * 60 * 60 * 1000
+			);
+
+			const usersPerWeek = await User.countDocuments({
+				registered_at: { $gte: oneWeekAgo },
+			});
+			const usersPerMonth = await User.countDocuments({
+				registered_at: { $gte: oneMonthAgo },
+			});
+			const totalUsers = await User.countDocuments();
+
+			// Count active and inactive users
+			const activeUsers = await User.countDocuments({
+				status: 'active',
+			});
+			const inactiveUsers = await User.countDocuments({
+				status: 'deactive',
+			});
+
+			// Count users by gender
+			const genderCounts = await User.aggregate([
+				{ $group: { _id: '$gender', count: { $sum: 1 } } },
+			]);
+
+			// Count users by birth_date (you may need to adjust this based on your specific requirements)
+			const birthDateCounts = await User.aggregate([
+				{
+					$group: {
+						_id: { $year: '$birth_date' },
+						count: { $sum: 1 },
+					},
+				},
+			]);
+
+			// Calculate age group percentages
+			const ageGroups: AgeGroups = {
+				'0-9': 0,
+				'10-19': 0,
+				'20-29': 0,
+				'30-39': 0,
+				'40-49': 0,
+				'50-59': 0,
+				'60+': 0,
+			};
+
+			// Calculate age and update ageGroups
+			birthDateCounts.forEach((entry) => {
+				const birthYear = entry._id;
+				const age = now.getFullYear() - birthYear;
+
+				if (age < 10) {
+					ageGroups['0-9'] += entry.count;
+				} else if (age < 20) {
+					ageGroups['10-19'] += entry.count;
+				} else if (age < 30) {
+					ageGroups['20-29'] += entry.count;
+				} else if (age < 40) {
+					ageGroups['30-39'] += entry.count;
+				} else if (age < 50) {
+					ageGroups['40-49'] += entry.count;
+				} else if (age < 60) {
+					ageGroups['50-59'] += entry.count;
+				} else {
+					ageGroups['60+'] += entry.count;
+				}
+			});
+
+			// Calculate percentages
+			const ageGroupPercentages: AgeGroupPercentages = {};
+			for (const [group, count] of Object.entries(ageGroups)) {
+				ageGroupPercentages[group] = {
+					percentage: ((count / totalUsers) * 100).toFixed(2) + '%',
+					count: count,
+				};
+			}
+
+			const weekData = [];
+			for (let i = 0; i < 4; i++) {
+				// Show data for the past 4 weeks
+				const startOfWeek = new Date(
+					now.getTime() - (i * 7 + 7) * 24 * 60 * 60 * 1000
+				);
+				const endOfWeek = new Date(
+					now.getTime() - i * 7 * 24 * 60 * 60 * 1000
+				);
+
+				const weekCount = await User.countDocuments({
+					registered_at: { $gte: startOfWeek, $lte: endOfWeek },
+				});
+
+				weekData.push({
+					week: `-${i + 1} week`,
+					count: weekCount,
+				});
+			}
+
+			const monthData = [];
+			for (let i = 0; i < 5; i++) {
+				// Show data for the past 5 months, including the current month
+				const startOfMonth = moment()
+					.subtract(i, 'months')
+					.startOf('month');
+				const endOfMonth = moment()
+					.subtract(i, 'months')
+					.endOf('month');
+
+				const monthCount = await User.countDocuments({
+					registered_at: {
+						$gte: startOfMonth,
+						$lte: endOfMonth.toDate(),
+					},
+				});
+
+				const monthName = startOfMonth.format('MMMM'); // Format the month name in English
+				monthData.unshift({
+					month: monthName,
+					count: monthCount,
+				});
+			}
+
+			// Format data for response
+			const responseData = {
+				userCreated: {
+					week: weekData,
+					month: monthData,
+					total: totalUsers,
+				},
+				userStatus: {
+					active: activeUsers,
+					deactive: inactiveUsers,
+				},
+				userGender: genderCounts,
+				userBirthDate: birthDateCounts,
+				ageGroupPercentages,
+			};
+
+			return res.status(200).json({
+				success: true,
+				message: 'Admin dashboard data retrieved successfully',
+				data: responseData,
 			});
 		} catch (error) {
 			console.error(error);
