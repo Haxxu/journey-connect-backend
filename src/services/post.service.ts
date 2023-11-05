@@ -1,4 +1,5 @@
 import Post from '@/models/post.model';
+import User from '@/models/user.model';
 
 class PostService {
 	id?: string;
@@ -187,6 +188,83 @@ class PostService {
 			throw new Error(
 				'Error fetching saved posts by user ID: ' + error.message
 			);
+		}
+	}
+
+	static async getPosts(condition: any) {
+		try {
+			let search = condition.search as string;
+			let page = condition.page as string;
+			let pageSize = condition.pageSize as string;
+			let createdStartDate = condition.createdStartDate as string;
+			let createdEndDate = condition.createdEndDate as string;
+
+			const query: any = {};
+
+			if (search) {
+				query.$or = [
+					{ title: { $regex: new RegExp(search, 'i') } },
+					{
+						owner: {
+							$in: await User.find({
+								$or: [
+									{
+										first_name: {
+											$regex: new RegExp(search, 'i'),
+										},
+									},
+									{
+										last_name: {
+											$regex: new RegExp(search, 'i'),
+										},
+									},
+									{
+										email: {
+											$regex: new RegExp(search, 'i'),
+										},
+									},
+								],
+							}).distinct('_id'),
+						},
+					},
+				];
+			}
+
+			if (createdStartDate && createdEndDate) {
+				query.createdAt = {
+					$gte: new Date(createdStartDate),
+					$lte: new Date(createdEndDate),
+				};
+			} else if (createdStartDate) {
+				query.createdAt = { $gte: new Date(createdStartDate) };
+			} else if (createdEndDate) {
+				query.createdAt = { $lte: new Date(createdEndDate) };
+			}
+
+			const options = {
+				page: parseInt(page, 10) || 1,
+				limit: parseInt(pageSize, 10) || 10,
+				sort: { createdAt: -1 },
+				populate: [
+					{
+						path: 'owner',
+						select: '_id first_name avatar last_name medias',
+					},
+					{
+						path: 'inner_post',
+						populate: {
+							path: 'owner',
+							select: '_id first_name last_name avatar medias',
+						},
+					},
+				],
+			};
+
+			const posts = await Post.paginate(query, options);
+
+			return posts;
+		} catch (error) {
+			console.error('Error getting post documents:', error);
 		}
 	}
 }

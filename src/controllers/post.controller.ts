@@ -184,6 +184,21 @@ class PostController {
 		}
 	}
 
+	async getPosts(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			const posts = await PostService.getPosts(req.query);
+
+			return res.status(200).json({
+				success: true,
+				message: 'Get posts successfully',
+				data: posts,
+			});
+		} catch (error) {
+			console.error(error);
+			return next(new ApiError());
+		}
+	}
+
 	async getPostsByUserId(req: IReqAuth, res: Response, next: NextFunction) {
 		try {
 			const user = await User.findOne({ _id: req.params?.id });

@@ -1,5 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose, { PaginateModel } from 'mongoose';
 import Joi from 'joi';
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 import { IPost } from '@configs/interface/post.interface';
 
@@ -134,7 +135,9 @@ const postSchema = new mongoose.Schema<IPost, PostModel, {}>(
 	{ timestamps: true }
 );
 
-const Post = mongoose.model<IPost>('Post', postSchema);
+postSchema.plugin(mongoosePaginate);
+
+const Post = mongoose.model<IPost, PaginateModel<IPost>>('Post', postSchema);
 
 export const validateCreatePost = (post: IPost) => {
 	const schema = Joi.object({
