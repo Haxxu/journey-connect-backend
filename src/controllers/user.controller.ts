@@ -8,6 +8,7 @@ import MediaService from '@/services/media.service';
 import User, { validateUpdateUser } from '@/models/user.model';
 import UserService from '@/services/user.service';
 import moment from 'moment';
+import mongoose from 'mongoose';
 
 type AgeGroups = {
 	'0-9': number;
@@ -387,6 +388,59 @@ class UserController {
 				success: true,
 				message: 'Active user successfully',
 				data: null,
+			});
+		} catch (error) {
+			console.error(error);
+			return next(new ApiError());
+		}
+	}
+
+	async getUserFriendsById(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			const userId = req.params.id;
+			const user = await User.findById(userId);
+
+			if (!user) {
+				return res.status(404).json({
+					success: false,
+					message: 'User not found',
+					data: null,
+				});
+			}
+
+			const userFriends = await User.find({
+				_id: {
+					$in: user?.friends?.map((friend) => friend.user.toString()),
+				},
+			}).select('_id medias first_name last_name avatar friends');
+
+			const currentUserFriends = await User.find({
+				_id: {
+					$in: req.user?.friends?.map((friend) =>
+						friend.user.toString()
+					),
+				},
+			}).select('_id medias first_name last_name avatar friends');
+
+			const userFriendsWithMutual = userFriends.map((userFriend) => {
+				const mutualFriends = currentUserFriends.filter(
+					(currentUserFriend) =>
+						userFriend?.friends?.some((friend) =>
+							new mongoose.Types.ObjectId(friend.user).equals(
+								currentUserFriend._id
+							)
+						)
+				);
+				return {
+					user: userFriend,
+					mutualFriends: mutualFriends,
+				};
+			});
+
+			return res.status(200).json({
+				success: true,
+				message: 'Get user friends successfully',
+				data: userFriendsWithMutual,
 			});
 		} catch (error) {
 			console.error(error);

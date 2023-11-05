@@ -14,6 +14,9 @@ router.get('/users/search', [userAuth, userController.searchUsers]);
 // [GET] => get user info (dashboard admin chart)
 router.get('/users/info', [adminAuth, userController.getUsersInfo]);
 
+// [GET] => get user friend by user id
+router.get('/users/:id/friends', [userAuth, userController.getUserFriendsById]);
+
 // [GET] => get posts by user id
 router.get('/users/:id/posts', [userAuth, postController.getPostsByUserId]);
 
