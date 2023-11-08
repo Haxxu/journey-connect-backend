@@ -9,6 +9,9 @@ const router = Router();
 // [GET] => get feed posts
 router.get('/posts/feed', [userAuth, postController.getFeedPosts]);
 
+// [GET] => get post info
+router.get('/posts/info', [adminAuth, postController.getPostsInfo]);
+
 // [POST] => create post
 router.post('/posts', [userAuth, postController.createPost]);
 

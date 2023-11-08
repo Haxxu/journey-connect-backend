@@ -7,6 +7,7 @@ import PostService from '@/services/post.service';
 import MediaService from '@/services/media.service';
 import User from '@/models/user.model';
 import { ApiResPayload } from '@/utils/api';
+import moment from 'moment';
 
 class PostController {
 	async createPost(req: IReqAuth, res: Response, next: NextFunction) {
@@ -357,6 +358,111 @@ class PostController {
 			});
 		} catch (error) {
 			console.log(error);
+			return next(new ApiError());
+		}
+	}
+
+	async getPostsInfo(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			const now = new Date();
+			const oneWeekAgo = new Date(
+				now.getTime() - 7 * 24 * 60 * 60 * 1000
+			);
+
+			// Count total posts
+			const totalPosts = await Post.countDocuments();
+
+			// Count total share posts
+			const totalSharePosts = await Post.countDocuments({
+				post_type: 'share_post',
+			});
+
+			// Count total individual posts
+			const totalIndividualPosts = await Post.countDocuments({
+				post_type: 'individual_post',
+			});
+
+			// Count share posts created since last week
+			const sharePostsSinceLastWeek = await Post.countDocuments({
+				post_type: 'share_post',
+				createdAt: { $gte: oneWeekAgo },
+			});
+
+			// Count individual posts created since last week
+			const individualPostsSinceLastWeek = await Post.countDocuments({
+				post_type: 'individual_post',
+				createdAt: { $gte: oneWeekAgo },
+			});
+
+			const monthData = [];
+			for (let i = 0; i < 5; i++) {
+				// Show data for the past 5 months, including the current month
+				const startOfMonth = moment()
+					.subtract(i, 'months')
+					.startOf('month');
+				const endOfMonth = moment()
+					.subtract(i, 'months')
+					.endOf('month');
+
+				const monthCount = await Post.countDocuments({
+					createdAt: {
+						$gte: startOfMonth,
+						$lte: endOfMonth.toDate(),
+					},
+				});
+
+				const monthName = startOfMonth.format('MMMM'); // Format the month name in English
+
+				// Count share and individual posts for each month
+				const sharePostsCount = await Post.countDocuments({
+					createdAt: {
+						$gte: startOfMonth,
+						$lte: endOfMonth.toDate(),
+					},
+					post_type: 'share_post',
+				});
+
+				const individualPostsCount = await Post.countDocuments({
+					createdAt: {
+						$gte: startOfMonth,
+						$lte: endOfMonth.toDate(),
+					},
+					post_type: 'individual_post',
+				});
+
+				monthData.unshift({
+					month: monthName,
+					total: monthCount,
+					share_post: sharePostsCount,
+					individual_post: individualPostsCount,
+				});
+			}
+
+			// Format data for response
+			const responseData = {
+				posts: {
+					total: totalPosts,
+					sinceLastWeek:
+						sharePostsSinceLastWeek + individualPostsSinceLastWeek,
+				},
+				sharePosts: {
+					total: totalSharePosts,
+					sinceLastWeek: sharePostsSinceLastWeek,
+				},
+				individualPosts: {
+					total: totalIndividualPosts,
+					sinceLastWeek: individualPostsSinceLastWeek,
+				},
+				postsCreatedEachMonth: monthData,
+			};
+
+			return res.status(200).json({
+				success: true,
+				message: 'Admin dashboard posts data retrieved successfully',
+				data: responseData,
+			});
+		} catch (error) {
+			console.error(error);
 			return next(new ApiError());
 		}
 	}
