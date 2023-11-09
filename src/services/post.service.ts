@@ -71,6 +71,7 @@ class PostService {
 			const posts = await Post.find({
 				owner: userId,
 				visibility: { $in: visibilityOptions },
+				status: 'active',
 			})
 				.populate([
 					{
@@ -114,6 +115,7 @@ class PostService {
 						],
 					},
 				],
+				status: 'active',
 			})
 				.skip(pageSize * page)
 				.limit(pageSize)

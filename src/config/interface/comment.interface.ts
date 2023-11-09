@@ -10,5 +10,6 @@ export interface IComment extends Document {
 	reply_comments?: any[];
 	reply_user?: string | Types.ObjectId;
 	root_comment?: string | Types.ObjectId;
+	status: 'active' | 'deactive';
 	_doc?: object;
 }

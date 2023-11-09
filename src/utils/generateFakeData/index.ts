@@ -10,10 +10,11 @@ import {
 } from './post.faker';
 import Post from '@/models/post.model';
 import { generateFakeEmotions } from './emotion.faker';
+import Comment from '@/models/comment.model';
 
 async function generateFakeData() {
 	// try {
-	// 	const result = await User.updateMany(
+	// 	const result = await Comment.updateMany(
 	// 		{ status: { $exists: false } }, // Only update documents that don't have the role field
 	// 		{ $set: { status: 'active' } }
 	// 	);

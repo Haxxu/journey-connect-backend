@@ -37,5 +37,6 @@ export interface IPost extends Document {
 	places: IPlaceAdded[];
 	createdAt?: any;
 	updatedAt?: any;
+	status?: 'active' | 'deactive';
 	_doc: object;
 }

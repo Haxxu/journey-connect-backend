@@ -33,6 +33,10 @@ const commentSchema = new mongoose.Schema<IComment, CommentModel, {}>(
 			{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' },
 		],
 		reply_user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+		status: {
+			type: String,
+			default: 'active',
+		},
 	},
 	{ timestamps: true }
 );

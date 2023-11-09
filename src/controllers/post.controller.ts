@@ -185,6 +185,40 @@ class PostController {
 		}
 	}
 
+	async updatePostStatus(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			const post = await Post.findOne({
+				_id: req.params.id,
+			});
+			if (!post) {
+				return res.status(404).json({
+					success: false,
+					message: 'Post not found',
+					data: null,
+				});
+			}
+			const updatedPost = await Post.findByIdAndUpdate(
+				req.params.id,
+				{
+					status:
+						req.body.status === 'active' ? 'active' : 'deactive',
+				},
+				{
+					new: true,
+				}
+			);
+
+			return res.status(200).json({
+				success: true,
+				message: 'Update post status successfully',
+				data: updatedPost,
+			});
+		} catch (error) {
+			console.log(error);
+			return next(new ApiError());
+		}
+	}
+
 	async getPosts(req: IReqAuth, res: Response, next: NextFunction) {
 		try {
 			const posts = await PostService.getPosts(req.query);

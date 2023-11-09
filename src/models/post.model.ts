@@ -131,6 +131,10 @@ const postSchema = new mongoose.Schema<IPost, PostModel, {}>(
 		theme: {
 			type: String,
 		},
+		status: {
+			type: String,
+			default: 'active',
+		},
 	},
 	{ timestamps: true }
 );

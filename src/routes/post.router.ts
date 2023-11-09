@@ -15,6 +15,9 @@ router.get('/posts/info', [adminAuth, postController.getPostsInfo]);
 // [POST] => create post
 router.post('/posts', [userAuth, postController.createPost]);
 
+// [GET] => get post info
+router.patch('/posts/:id/status', [adminAuth, postController.updatePostStatus]);
+
 // [POST] => update post
 router.put('/posts/:id', [userAuth, postController.updatePostById]);
 

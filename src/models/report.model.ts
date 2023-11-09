@@ -1,4 +1,5 @@
-import mongoose from 'mongoose';
+import mongoose, { PaginateModel } from 'mongoose';
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 import { IReport } from '@/config/interface/report.interface';
 
@@ -39,6 +40,11 @@ const reportSchema = new mongoose.Schema<IReport, ReportModel, {}>(
 	{ timestamps: true }
 );
 
-const Report = mongoose.model<IReport>('Report', reportSchema);
+reportSchema.plugin(mongoosePaginate);
+
+const Report = mongoose.model<IReport, PaginateModel<IReport>>(
+	'Report',
+	reportSchema
+);
 
 export default Report;

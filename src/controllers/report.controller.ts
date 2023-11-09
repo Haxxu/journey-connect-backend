@@ -45,6 +45,21 @@ class ReportController {
 			return next(new ApiError());
 		}
 	}
+
+	async getReports(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			const reports = await ReportService.getReports(req.query);
+
+			return res.status(200).json({
+				success: true,
+				message: 'Get reports successfully',
+				data: reports,
+			});
+		} catch (error) {
+			console.error(error);
+			return next(new ApiError());
+		}
+	}
 }
 
 export default new ReportController();
