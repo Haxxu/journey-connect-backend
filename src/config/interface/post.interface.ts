@@ -38,5 +38,14 @@ export interface IPost extends Document {
 	createdAt?: any;
 	updatedAt?: any;
 	status?: 'active' | 'deactive';
+	emotionInfo?: {
+		total?: number;
+		like?: number;
+		heart?: number;
+		haha?: number;
+		wow?: number;
+		sad?: number;
+		angry?: number;
+	};
 	_doc: object;
 }

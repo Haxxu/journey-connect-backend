@@ -12,6 +12,12 @@ router.get('/posts/feed', [userAuth, postController.getFeedPosts]);
 // [GET] => get post info
 router.get('/posts/info', [adminAuth, postController.getPostsInfo]);
 
+// [GET] => get post base emotion
+router.get('/posts/top-emotions', [
+	adminAuth,
+	postController.getPostsByEmotions,
+]);
+
 // [POST] => create post
 router.post('/posts', [userAuth, postController.createPost]);
 

@@ -11,13 +11,19 @@ import {
 import Post from '@/models/post.model';
 import { generateFakeEmotions } from './emotion.faker';
 import Comment from '@/models/comment.model';
+import Emotion from '@/models/emotion.model';
 
 async function generateFakeData() {
 	// try {
-	// 	const result = await Comment.updateMany(
-	// 		{ status: { $exists: false } }, // Only update documents that don't have the role field
-	// 		{ $set: { status: 'active' } }
-	// 	);
+	// const result = await Comment.updateMany(
+	// 	{ status: { $exists: false } }, // Only update documents that don't have the role field
+	// 	{ $set: { status: 'active' } }
+	// );
+
+	// const result = await Emotion.updateMany(
+	// 	{ type: 'smile' }, // Only update documents that don't have the role field
+	// 	{ $set: { type: 'haha' } }
+	// );
 	// 	console.log('Updated', 'documents to set role to "user".');
 	// } catch (err) {
 	// 	console.error('Error updating documents:', err);

@@ -8,6 +8,7 @@ import MediaService from '@/services/media.service';
 import User from '@/models/user.model';
 import { ApiResPayload } from '@/utils/api';
 import moment from 'moment';
+import Emotion from '@/models/emotion.model';
 
 class PostController {
 	async createPost(req: IReqAuth, res: Response, next: NextFunction) {
@@ -233,6 +234,27 @@ class PostController {
 			return next(new ApiError());
 		}
 	}
+
+	getPostsByEmotions = async (
+		req: IReqAuth,
+		res: Response,
+		next: NextFunction
+	) => {
+		try {
+			const responseData = await PostService.getPostByEmotion(
+				Number(req.query?.limit)
+			);
+
+			return res.status(200).json({
+				success: true,
+				message: 'Get posts successfully',
+				data: responseData,
+			});
+		} catch (error) {
+			console.log(error);
+			return next(new ApiError());
+		}
+	};
 
 	async getPostsByUserId(req: IReqAuth, res: Response, next: NextFunction) {
 		try {

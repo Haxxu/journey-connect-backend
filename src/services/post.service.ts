@@ -1,3 +1,4 @@
+import Emotion from '@/models/emotion.model';
 import Post from '@/models/post.model';
 import User from '@/models/user.model';
 
@@ -264,7 +265,132 @@ class PostService {
 
 			const posts = await Post.paginate(query, options);
 
-			return posts;
+			let length = posts.docs?.length || 0;
+
+			for (let i = 0; i < length; ++i) {
+				const emotions = await Emotion.find({
+					post: posts.docs[i]._id,
+				});
+
+				const emotionInfo = {
+					total: emotions.length,
+					sad: emotions.filter((emotion) => emotion.type === 'sad')
+						.length,
+					like: emotions.filter((emotion) => emotion.type === 'like')
+						.length,
+					heart: emotions.filter(
+						(emotion) => emotion.type === 'heart'
+					).length,
+					wow: emotions.filter((emotion) => emotion.type === 'wow')
+						.length,
+					haha: emotions.filter((emotion) => emotion.type === 'haha')
+						.length,
+					angry: emotions.filter(
+						(emotion) => emotion.type === 'angry'
+					).length,
+				};
+
+				posts.docs[i].emotionInfo = emotionInfo;
+			}
+
+			const responseData = {
+				...posts,
+				docs: posts.docs.map((post) => ({
+					...post.toObject(),
+					emotionInfo: post.emotionInfo,
+				})),
+			};
+
+			return responseData;
+		} catch (error) {
+			console.error('Error getting post documents:', error);
+		}
+	}
+
+	static async getPostByEmotion(limit: number = 10) {
+		try {
+			const emotionCounts = await Emotion.aggregate([
+				{
+					$match: {
+						context_type: 'post',
+					},
+				},
+				{
+					$group: {
+						_id: '$post',
+						totalEmotions: { $sum: 1 },
+						sad: {
+							$sum: { $cond: [{ $eq: ['$type', 'sad'] }, 1, 0] },
+						},
+						like: {
+							$sum: { $cond: [{ $eq: ['$type', 'like'] }, 1, 0] },
+						},
+						heart: {
+							$sum: {
+								$cond: [{ $eq: ['$type', 'heart'] }, 1, 0],
+							},
+						},
+						haha: {
+							$sum: { $cond: [{ $eq: ['$type', 'haha'] }, 1, 0] },
+						},
+						wow: {
+							$sum: { $cond: [{ $eq: ['$type', 'wow'] }, 1, 0] },
+						},
+						angry: {
+							$sum: {
+								$cond: [{ $eq: ['$type', 'angry'] }, 1, 0],
+							},
+						},
+					},
+				},
+			]);
+
+			// Sort the post IDs based on total emotions (descending order)
+			emotionCounts.sort((a, b) => b.totalEmotions - a.totalEmotions);
+
+			const sortedPostIds = emotionCounts.map((item) => item._id);
+
+			// Retrieve the corresponding posts
+			const posts = await Post.find({ _id: { $in: sortedPostIds } })
+				.populate('owner', '_id first_name avatar last_name medias')
+				.populate({
+					path: 'inner_post',
+					populate: {
+						path: 'owner',
+						select: '_id first_name last_name avatar medias',
+					},
+				})
+				.limit(limit)
+				.exec();
+
+			// Calculate emotionInfo for each post
+			let length = posts.length;
+			for (let i = 0; i < length; ++i) {
+				const emotions = emotionCounts.find(
+					(item) => item._id && item._id.equals(posts[i]._id)
+				);
+				const emotionInfo = {
+					total: emotions ? emotions.totalEmotions : 0,
+					sad: emotions ? emotions.sad : 0,
+					like: emotions ? emotions.like : 0,
+					heart: emotions ? emotions.heart : 0,
+					wow: emotions ? emotions.wow : 0,
+					haha: emotions ? emotions.haha : 0,
+					angry: emotions ? emotions.angry : 0,
+				};
+				posts[i].emotionInfo = emotionInfo;
+			}
+
+			posts.sort(
+				(a, b) =>
+					(b?.emotionInfo?.total || 0) - (a?.emotionInfo?.total || 0)
+			);
+
+			const responseData = posts.map((post) => ({
+				...post.toObject(),
+				emotionInfo: post.emotionInfo,
+			}));
+			return responseData;
 		} catch (error) {
 			console.error('Error getting post documents:', error);
 		}
