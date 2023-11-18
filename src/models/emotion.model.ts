@@ -18,9 +18,10 @@ const emotionSchema = new mongoose.Schema<IEmotion, EmotionModel, {}>(
 		},
 		context_type: {
 			type: String,
-			default: 'post',
+			default: 'post', // comment
 		},
 		post: { type: mongoose.Schema.Types.ObjectId, ref: 'Post' },
+		comment: { type: mongoose.Schema.Types.ObjectId, ref: 'Comment' },
 		emotion_date: { type: Date },
 	},
 	{ timestamps: true }
@@ -39,7 +40,7 @@ export const validateCreateEmotion = (emotion: IEmotion) => {
 			'sad',
 			'angry'
 		),
-		context_type: Joi.string().valid('post'),
+		context_type: Joi.string().valid('post', 'comment'),
 		context_id: Joi.string(),
 	});
 
@@ -47,7 +48,7 @@ export const validateCreateEmotion = (emotion: IEmotion) => {
 };
 export const validateDeleteEmotion = (emotion: IEmotion) => {
 	const schema = Joi.object({
-		context_type: Joi.string().valid('post'),
+		context_type: Joi.string().valid('post', 'comment'),
 		context_id: Joi.string(),
 	});
 

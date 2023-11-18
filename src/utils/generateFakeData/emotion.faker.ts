@@ -8,8 +8,8 @@ export async function generateFakeEmotions(count: number): Promise<string[]> {
 	const fakeEmotions = [];
 
 	const posts = await Post.find({
-		post_type: { $in: ['group_post', 'individual_post'] },
-		visibility: { $in: ['public', 'public_group'] },
+		post_type: { $in: ['share_post', 'individual_post'] },
+		visibility: { $in: ['public'] },
 	}).select('_id');
 	const postIds = posts.map((post) => post._id.toString());
 	const users = await User.find().select('_id');
@@ -46,16 +46,16 @@ export async function generateFakeEmotions(count: number): Promise<string[]> {
 
 		fakeEmotions.push(fakeEmotion);
 
-		await post
-			?.updateOne({
-				$push: {
-					emotions: {
-						emotion: fakeEmotion._id,
-						added_at: new Date(),
-					},
-				},
-			})
-			.exec();
+		// await post
+		// 	?.updateOne({
+		// 		$push: {
+		// 			emotions: {
+		// 				emotion: fakeEmotion._id,
+		// 				added_at: new Date(),
+		// 			},
+		// 		},
+		// 	})
+		// 	.exec();
 	}
 
 	await Emotion.insertMany(fakeEmotions);

@@ -1,13 +1,19 @@
 import { faker } from '@faker-js/faker';
 import User from '@models/user.model';
 import Group from '@models/group.model';
+import { MEDIAS } from '@/utils/mock/medias';
 
 export async function generateFakeUsers(count: number): Promise<string[]> {
 	const fakeUsers = [];
 
+	const mediasLength = MEDIAS.length;
+
 	for (let i = 0; i < count; i++) {
-		let avatar = faker.image.avatar();
-		let background = faker.image.urlPicsumPhotos();
+		let mediaIndex = faker.number.int({ min: 0, max: mediasLength - 1 });
+		let mediaIndex2 = faker.number.int({ min: 0, max: mediasLength - 1 });
+
+		let avatar = MEDIAS[mediaIndex].id;
+		let background = MEDIAS[mediaIndex2].id;
 
 		const fakeUser = {
 			_id: faker.database.mongodbObjectId(),
@@ -51,18 +57,19 @@ export async function generateFakeUsers(count: number): Promise<string[]> {
 			country: faker.location.country(),
 			avatar: avatar,
 			background: background,
+			description: faker.lorem.paragraph(3),
+			status: 'active',
+			role: 'user',
 			medias: [
 				{
 					type: 'avatar',
-					url: avatar,
+					url: MEDIAS[mediaIndex].url,
+					id: MEDIAS[mediaIndex].id,
 				},
 				{
 					type: 'background',
-					url: background,
-				},
-				{
-					type: 'image',
-					url: faker.image.url(),
+					url: MEDIAS[mediaIndex2].url,
+					id: MEDIAS[mediaIndex2].id,
 				},
 			],
 			friends: [] as { user?: string; added_at?: Date }[],

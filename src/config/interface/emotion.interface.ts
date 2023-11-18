@@ -11,6 +11,7 @@ export interface IEmotion extends Document {
 	type: string;
 	context_type: string;
 	post: string | Types.ObjectId;
+	comment: string | Types.ObjectId;
 	emotion_date: Date;
 	_doc: object;
 }

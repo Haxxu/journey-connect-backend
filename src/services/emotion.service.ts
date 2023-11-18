@@ -37,6 +37,7 @@ class EmotionService {
 			const newEmotion = await new Emotion({
 				owner: payload.owner,
 				type: payload.type,
+				context_type: payload.context_type,
 				[payload.context_type]: payload.context_id,
 			}).save();
 			return newEmotion;

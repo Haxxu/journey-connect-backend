@@ -2,6 +2,25 @@ import { faker } from '@faker-js/faker';
 import User from '@models/user.model';
 import Group from '@models/group.model';
 import Post from '@models/post.model';
+import { MEDIAS } from '../mock/medias';
+
+function getRandomNumbers(n: number, m: number) {
+	if (n > m) {
+		throw new Error('n must be less than or equal to m');
+	}
+
+	// Create an array of numbers from 0 to m-1
+	const numbersArray = Array.from({ length: m }, (_, index) => index);
+
+	// Shuffle the array
+	for (let i = numbersArray.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[numbersArray[i], numbersArray[j]] = [numbersArray[j], numbersArray[i]];
+	}
+
+	// Return the first n elements
+	return numbersArray.slice(0, n);
+}
 
 export async function generateFakePosts(count: number): Promise<string[]> {
 	const fakePosts = [];
@@ -10,16 +29,21 @@ export async function generateFakePosts(count: number): Promise<string[]> {
 	const userIds = users.map((user) => user._id.toString());
 	const numbers = [0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
+	const mediasLength = MEDIAS.length;
+
 	for (let i = 0; i < count; i++) {
 		let ownerId = faker.helpers.arrayElement(userIds);
 
 		let numOfImages = faker.helpers.arrayElement(numbers);
 		let medias = [];
+		const mediaIndexArr = getRandomNumbers(numOfImages, mediasLength - 1);
+		let mediaIndexArrLeng = mediaIndexArr.length;
 
-		for (let i = 0; i < numOfImages; ++i) {
+		for (let i = 0; i < mediaIndexArrLeng; ++i) {
 			medias.push({
 				type: 'image',
-				url: faker.image.url(),
+				url: MEDIAS[i].url,
+				id: MEDIAS[i].id,
 			});
 		}
 
@@ -149,7 +173,6 @@ export async function generateFakeSharePosts(count: number): Promise<string[]> {
 			{
 				$push: {
 					posts: {
-						user: ownerId,
 						post: fakePost._id,
 						added_at: new Date(),
 					},
@@ -162,6 +185,7 @@ export async function generateFakeSharePosts(count: number): Promise<string[]> {
 			{
 				$push: {
 					shares: {
+						user: ownerId,
 						post: fakePost._id,
 						added_at: new Date(),
 					},
