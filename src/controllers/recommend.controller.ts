@@ -41,21 +41,12 @@ class RecommendController {
 				context_type: 'post',
 			}).lean();
 
-			const mergedData = posts.map((post) => {
-				const user = users.find(
-					(u) => u._id.toString() === post.owner?.toString()
-				);
-				const emotion = emotions.find(
-					(e) => e.post.toString() === post._id.toString()
-				);
-				const emotionTypeNumber = mapEmotionTypeToNumber(emotion?.type);
-				return {
-					user_id: user?._id.toString(),
-					post_id: post._id,
-					emotion_type: emotionTypeNumber,
-					timestamp: post.createdAt,
-				};
-			});
+			const data = emotions.map((emotion) => ({
+				user_id: emotion?.owner.toString(),
+				post_id: emotion.post.toString(),
+				emotion_type: mapEmotionTypeToNumber(emotion?.type),
+				timestamp: emotion.updatedAt,
+			}));
 
 			const csvWriter = createObjectCsvWriter({
 				path: 'recommendations/emotions.csv',
@@ -67,7 +58,7 @@ class RecommendController {
 				],
 			});
 
-			await csvWriter.writeRecords(mergedData);
+			await csvWriter.writeRecords(data);
 
 			return res.status(200).json({
 				success: true,
