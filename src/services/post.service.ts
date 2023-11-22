@@ -1,6 +1,7 @@
 import Emotion from '@/models/emotion.model';
 import Post from '@/models/post.model';
 import User from '@/models/user.model';
+import axios from 'axios';
 
 class PostService {
 	id?: string;
@@ -137,6 +138,66 @@ class PostService {
 				.exec();
 
 			return posts;
+		} catch (error: any) {
+			throw new Error(
+				'Error fetching feed posts by user ID: ' + error.message
+			);
+		}
+	}
+
+	static async getRecommendPosts(
+		userId: string,
+		userFriendIds: string[] = [],
+		page: number = 0,
+		pageSize: number = 10
+	) {
+		try {
+			// Step 1: Fetch recommended posts using the ML API
+			const response = await axios.get(
+				`http://127.0.0.1:5000/recommend/${userId}`
+			);
+			const recommendedPosts = response.data.recommendations;
+
+			// Step 2: Extract post IDs and scores
+			const postIds = recommendedPosts.map((post: any) => post.post_id);
+			const postScores = recommendedPosts.map((post: any) => post.score);
+
+			// Step 3: Fetch posts from MongoDB based on post IDs
+			const posts = await Post.find({
+				_id: { $in: postIds },
+				status: 'active',
+				$or: [
+					{ owner: userId },
+					{ visibility: 'public' },
+					{
+						$and: [
+							{ visibility: 'friend_only' },
+							{ owner: { $in: userFriendIds } },
+						],
+					},
+				],
+			})
+				.populate([
+					{
+						path: 'owner',
+						select: '_id first_name last_name avatar medias',
+					},
+					{
+						path: 'inner_post',
+						populate: {
+							path: 'owner',
+							select: '_id first_name last_name avatar medias',
+						},
+					},
+				])
+				.exec();
+
+			// Step 4: Order fetched posts based on the order of post IDs from the ML API
+			const orderedPosts = postIds.map((postId: any) =>
+				posts.find((post) => post._id.equals(postId))
+			);
+
+			return orderedPosts;
 		} catch (error: any) {
 			throw new Error(
 				'Error fetching feed posts by user ID: ' + error.message

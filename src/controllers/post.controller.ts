@@ -321,6 +321,33 @@ class PostController {
 		}
 	}
 
+	async getRecommendPosts(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			let page = Number(req.query?.page) || 0;
+			let pageSize = Number(req.query?.pageSize) || 10;
+
+			const posts = await PostService.getRecommendPosts(
+				req.user?._id,
+				req.user?.friends?.map((item) => item.user.toString()) || [],
+				page,
+				pageSize
+			);
+
+			return res.status(200).json({
+				success: true,
+				message: 'Get recommend posts successfully',
+				data: {
+					page,
+					pageSize,
+					data: posts,
+				},
+			});
+		} catch (error) {
+			console.log(error);
+			return next(new ApiError());
+		}
+	}
+
 	async getSavedPosts(req: IReqAuth, res: Response, next: NextFunction) {
 		try {
 			let page = Number(req.query?.page) || 0;
