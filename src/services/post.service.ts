@@ -1,3 +1,4 @@
+import { env } from '@/config/environment';
 import Emotion from '@/models/emotion.model';
 import Post from '@/models/post.model';
 import User from '@/models/user.model';
@@ -154,7 +155,7 @@ class PostService {
 		try {
 			// Step 1: Fetch recommended posts using the ML API
 			const response = await axios.get(
-				`http://127.0.0.1:5000/recommend/${userId}`
+				`${env.recommendApiUrl}/recommend/${userId}`
 			);
 			const recommendedPosts = response.data.recommendations;
 
@@ -162,7 +163,7 @@ class PostService {
 			const postIds = recommendedPosts.map((post: any) => post.post_id);
 			const postScores = recommendedPosts.map((post: any) => post.score);
 
-			// Step 3: Fetch posts from MongoDB based on post IDs
+			// Step 3: Fetch posts from MongoDB based on post IDs with pagination
 			const posts = await Post.find({
 				_id: { $in: postIds },
 				status: 'active',
@@ -190,6 +191,8 @@ class PostService {
 						},
 					},
 				])
+				.skip(page * pageSize)
+				.limit(pageSize)
 				.exec();
 
 			// Step 4: Order fetched posts based on the order of post IDs from the ML API
@@ -197,11 +200,9 @@ class PostService {
 				posts.find((post) => post._id.equals(postId))
 			);
 
-			return orderedPosts;
+			return posts;
 		} catch (error: any) {
-			throw new Error(
-				'Error fetching feed posts by user ID: ' + error.message
-			);
+			return [];
 		}
 	}
 

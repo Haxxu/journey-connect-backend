@@ -1,3 +1,4 @@
+import { env } from '@/config/environment';
 import { IReqAuth } from '@/config/interface/shared.interface';
 import Comment from '@/models/comment.model';
 import Emotion from '@/models/emotion.model';
@@ -5,6 +6,7 @@ import Post from '@/models/post.model';
 import User from '@/models/user.model';
 import ReportService from '@/services/report.service';
 import ApiError from '@/utils/api-error';
+import axios from 'axios';
 import { createObjectCsvWriter } from 'csv-writer';
 import { NextFunction, Response } from 'express';
 
@@ -50,12 +52,13 @@ class RecommendController {
 
 			const csvWriter = createObjectCsvWriter({
 				path: 'recommendations/emotions.csv',
-				header: [
-					{ id: 'user_id', title: 'User ID' },
-					{ id: 'post_id', title: 'Post ID' },
-					{ id: 'emotion_type', title: 'Emotion Type' },
-					{ id: 'timestamp', title: 'Timestamp' },
-				],
+				// header: [
+				// 	{ id: 'user_id', title: '' },
+				// 	{ id: 'post_id', title: 'Post ID' },
+				// 	{ id: 'emotion_type', title: 'Emotion Type' },
+				// 	{ id: 'timestamp', title: 'Timestamp' },
+				// ],
+				header: ['user_id', 'post_id', 'emotion_type', 'timestamp'],
 			});
 
 			await csvWriter.writeRecords(data);
@@ -67,6 +70,21 @@ class RecommendController {
 			});
 		} catch (error) {
 			console.error(error);
+			return next(new ApiError());
+		}
+	}
+
+	async trainingNewModel(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			const response = await axios.post(`${env.recommendApiUrl}/train`);
+
+			return res.status(200).json({
+				success: true,
+				message: 'Training recommend posts model successfully',
+				data: null,
+			});
+		} catch (error) {
+			console.log(error);
 			return next(new ApiError());
 		}
 	}

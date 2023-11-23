@@ -21,4 +21,6 @@ export const env = {
 	appId: process.env.APP_ID || '',
 	measurementId: process.env.MEASUREMENT_ID,
 	firebaseDBUrl: process.env.FIREBASE_DB_URL,
+
+	recommendApiUrl: process.env.RECOMMEND_API_URL,
 };

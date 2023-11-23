@@ -11,6 +11,11 @@ const router = Router();
 // [GET] => get recommend post
 router.get('/recommend/posts', [userAuth, postController.getRecommendPosts]);
 
+router.post('/recommend/training', [
+	adminAuth,
+	recommendController.trainingNewModel,
+]);
+
 // [POST] => report
 router.post('/recommend', [
 	adminAuth,

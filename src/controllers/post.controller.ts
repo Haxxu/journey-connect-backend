@@ -294,25 +294,62 @@ class PostController {
 		}
 	}
 
+	// async getFeedPosts(req: IReqAuth, res: Response, next: NextFunction) {
+	// 	try {
+	// 		let page = Number(req.query?.page) || 0;
+	// 		let pageSize = Number(req.query?.pageSize) || 10;
+
+	// 		const posts = await PostService.getFeedPosts(
+	// 			req.user?._id,
+	// 			req.user?.friends?.map((item) => item.user.toString()) || [],
+	// 			page,
+	// 			pageSize
+	// 		);
+
+	// 		return res.status(200).json({
+	// 			success: true,
+	// 			message: 'Get feed posts successfully',
+	// 			data: {
+	// 				page,
+	// 				pageSize,
+	// 				data: posts,
+	// 			},
+	// 		});
+	// 	} catch (error) {
+	// 		console.log(error);
+	// 		return next(new ApiError());
+	// 	}
+	// }
+
 	async getFeedPosts(req: IReqAuth, res: Response, next: NextFunction) {
 		try {
 			let page = Number(req.query?.page) || 0;
 			let pageSize = Number(req.query?.pageSize) || 10;
 
-			const posts = await PostService.getFeedPosts(
+			const feedPosts = await PostService.getFeedPosts(
 				req.user?._id,
 				req.user?.friends?.map((item) => item.user.toString()) || [],
 				page,
 				pageSize
 			);
 
+			const recommendPosts = await PostService.getRecommendPosts(
+				req.user?._id,
+				req.user?.friends?.map((item) => item.user.toString()) || [],
+				page,
+				pageSize
+			);
+
+			// Combine the posts and recommend posts
+			const combinedPosts = shuffle([...feedPosts, ...recommendPosts]);
+
 			return res.status(200).json({
 				success: true,
-				message: 'Get feed posts successfully',
+				message: 'Get combined feed posts successfully',
 				data: {
 					page,
 					pageSize,
-					data: posts,
+					data: combinedPosts,
 				},
 			});
 		} catch (error) {
@@ -549,6 +586,26 @@ class PostController {
 			return next(new ApiError());
 		}
 	}
+}
+
+function shuffle(array: any[]) {
+	let currentIndex = array.length,
+		randomIndex;
+
+	// While there remain elements to shuffle...
+	while (currentIndex !== 0) {
+		// Pick a remaining element...
+		randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex--;
+
+		// And swap it with the current element.
+		[array[currentIndex], array[randomIndex]] = [
+			array[randomIndex],
+			array[currentIndex],
+		];
+	}
+
+	return array;
 }
 
 export default new PostController();
