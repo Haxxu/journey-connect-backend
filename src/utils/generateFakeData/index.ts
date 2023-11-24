@@ -4,6 +4,7 @@ import Group from '@models/group.model';
 import { addUserToGroup, generateFakeUsers } from './user.faker';
 import { generateFakeGroups } from './group.faker';
 import {
+	generateCombinedAndShuffledFakePosts,
 	generateFakeGroupPosts,
 	generateFakePosts,
 	generateFakeSharePosts,
@@ -16,15 +17,12 @@ import Emotion from '@/models/emotion.model';
 
 async function generateFakeData() {
 	try {
-		await generateFakeUsers(100);
-
-		await generateFakePosts(200);
-
-		await generateFakeSharePosts(200);
-
-		await generateFakeEmotions(1000);
-
-		await generateFakeComments(1000);
+		// await generateFakeUsers(100);
+		// await generateCombinedAndShuffledFakePosts(50, 50);
+		// await generateFakePosts(200);
+		// await generateFakeSharePosts(200);
+		// await generateFakeEmotions(2000);
+		// await generateFakeComments(1000);
 	} catch (error) {
 		console.log(error);
 	}

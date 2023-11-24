@@ -23,4 +23,9 @@ export const env = {
 	firebaseDBUrl: process.env.FIREBASE_DB_URL,
 
 	recommendApiUrl: process.env.RECOMMEND_API_URL,
+
+	mailClientId: process.env.MAIL_CLIENT_ID || '',
+	mailClientSecret: process.env.MAIL_CLIENT_SECRET || '',
+	mailRefreshToken: process.env.MAIL_REFRESH_TOKEN || '',
+	senderMailAddress: process.env.SENDER_MAIL_ADDRESS || '',
 };

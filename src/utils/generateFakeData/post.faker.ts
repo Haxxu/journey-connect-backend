@@ -22,7 +22,7 @@ function getRandomNumbers(n: number, m: number) {
 	return numbersArray.slice(0, n);
 }
 
-export async function generateFakePosts(count: number): Promise<string[]> {
+export async function generateFakePosts(count: number): Promise<any[]> {
 	const fakePosts = [];
 
 	const users = await User.find().select('_id');
@@ -42,8 +42,8 @@ export async function generateFakePosts(count: number): Promise<string[]> {
 		for (let i = 0; i < mediaIndexArrLeng; ++i) {
 			medias.push({
 				type: 'image',
-				url: MEDIAS[i].url,
-				id: MEDIAS[i].id,
+				url: MEDIAS[mediaIndexArr[i]].url,
+				id: MEDIAS[mediaIndexArr[i]].id,
 			});
 		}
 
@@ -75,6 +75,7 @@ export async function generateFakePosts(count: number): Promise<string[]> {
 		).exec();
 	}
 
+	return fakePosts;
 	await Post.insertMany(fakePosts);
 	console.log(`${count} fake posts inserted`);
 	return fakePosts.map((item) => item._id);
@@ -143,7 +144,7 @@ export async function generateFakeGroupPosts(count: number): Promise<string[]> {
 	return fakePosts.map((item) => item._id);
 }
 
-export async function generateFakeSharePosts(count: number): Promise<string[]> {
+export async function generateFakeSharePosts(count: number): Promise<any[]> {
 	const fakePosts = [];
 
 	const users = await User.find().select('_id');
@@ -194,7 +195,33 @@ export async function generateFakeSharePosts(count: number): Promise<string[]> {
 		);
 	}
 
+	return fakePosts;
 	await Post.insertMany(fakePosts);
 	console.log(`${count} fake posts inserted`);
 	return fakePosts.map((item) => item._id);
+}
+
+export async function generateCombinedAndShuffledFakePosts(
+	countShare: number,
+	countIndividual: number
+): Promise<any[]> {
+	const sharePosts = await generateFakeSharePosts(countShare);
+	const individualPosts = await generateFakePosts(countIndividual);
+
+	// Combine the two arrays
+	const combinedPosts = [...sharePosts, ...individualPosts];
+
+	// Shuffle the combined array
+	const shuffledPosts = shuffleArray(combinedPosts);
+	await Post.insertMany(shuffledPosts);
+	console.log(`${shuffledPosts.length} fake posts inserted`);
+	return shuffledPosts;
+}
+
+function shuffleArray<T>(array: T[]): T[] {
+	for (let i = array.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[array[i], array[j]] = [array[j], array[i]];
+	}
+	return array;
 }

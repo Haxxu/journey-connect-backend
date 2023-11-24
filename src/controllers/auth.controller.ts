@@ -10,6 +10,7 @@ import { generateActiveToken } from '@/config/generate-token';
 import { validateEmail } from '@/utils/validate';
 import { ApiResPayload } from '@/utils/api';
 import { IDecodedActiveToken } from '@/config/interface/user.interface';
+import { sendMail } from '@/config/send-mail';
 
 class AuthController {
 	async register(req: Request, res: Response, next: NextFunction) {
@@ -65,9 +66,20 @@ class AuthController {
 						)
 					);
 			} else if (validateEmail(req.body.email)) {
+				sendMail(
+					req.body.email,
+					activeUrl,
+					'Verify your email address'
+				);
 				return res
 					.status(200)
-					.json(ApiResPayload('Success! Please check your email.'));
+					.json(
+						ApiResPayload(
+							null,
+							true,
+							'Success! Please check your email.'
+						)
+					);
 			} else {
 				return res
 					.status(400)
