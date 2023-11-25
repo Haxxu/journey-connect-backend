@@ -9,6 +9,8 @@ export const env = {
 	private_access_token_key: process.env.PRIVATE_ACCESS_TOKEN_KEY || '',
 	private_refresh_token_key: process.env.PRIVATE_REFRESH_TOKEN_KEY || '',
 	private_active_token_key: process.env.PRIVATE_ACTIVE_TOKEN_KEY || '',
+	private_reset_password_token_key:
+		process.env.PRIVATE_RESET_PASSWORD_TOKEN_KEY || '',
 	hash_salt: process.env.HASH_SALT || '',
 	client_url: process.env.CLIENT_URL || '',
 

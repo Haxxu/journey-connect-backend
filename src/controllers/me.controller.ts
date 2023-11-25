@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import bcrypt from 'bcrypt';
 
 import ApiError from '@/utils/api-error';
 import { IReqAuth } from '@/config/interface/shared.interface';
@@ -6,6 +7,8 @@ import PostService from '@/services/post.service';
 import MediaService from '@/services/media.service';
 import User from '@/models/user.model';
 import Post from '@/models/post.model';
+import { ApiResPayload } from '@/utils/api';
+import { env } from '@/config/environment';
 
 class MeController {
 	async getInfo(req: IReqAuth, res: Response, next: NextFunction) {
@@ -123,6 +126,51 @@ class MeController {
 				});
 			}
 			return next(new ApiError(404, 'You are not an admin'));
+		} catch (error) {
+			console.log(error);
+			return next(new ApiError());
+		}
+	}
+
+	async changePassword(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			const user = await User.findOne({ email: req.user?.email });
+			if (!user) {
+				return res
+					.status(404)
+					.json(
+						ApiResPayload(
+							null,
+							false,
+							'Invalid account or password'
+						)
+					);
+			}
+			const isValidPassword = await bcrypt.compare(
+				req.body.old_password,
+				user.password
+			);
+			if (!isValidPassword) {
+				return res
+					.status(404)
+					.json(ApiResPayload(null, false, 'Old password incorrect'));
+			}
+
+			const hashedPassword = await bcrypt.hash(
+				req.body.new_password,
+				Number(env.hash_salt)
+			);
+
+			await User.updateOne(
+				{ _id: req.user?._id },
+				{ $set: { password: hashedPassword } }
+			);
+
+			return res.status(200).json({
+				success: true,
+				message: 'Change password successfully',
+				data: null,
+			});
 		} catch (error) {
 			console.log(error);
 			return next(new ApiError());

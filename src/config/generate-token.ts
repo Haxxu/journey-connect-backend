@@ -23,3 +23,15 @@ export const generateActiveToken = function (payload: object): string {
 
 	return token;
 };
+
+export const generateResetPasswordToken = function (payload: object): string {
+	const token = jwt.sign(
+		payload,
+		env.private_reset_password_token_key as string,
+		{
+			expiresIn: '10m',
+		}
+	);
+
+	return token;
+};

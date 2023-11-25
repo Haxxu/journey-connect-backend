@@ -82,4 +82,7 @@ router.post('/me/posts', [userAuth, postController.savePost]);
 // [POST] => unsave post
 router.delete('/me/posts', [userAuth, postController.unsavePost]);
 
+// [POST] => change password
+router.post('/me/change-password', [userAuth, meController.changePassword]);
+
 export default router;
