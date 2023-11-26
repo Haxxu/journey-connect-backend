@@ -12,6 +12,8 @@ import CommentService, {
 } from '@/services/comment.service';
 import User from '@/models/user.model';
 import { io } from '@/index';
+import moment from 'moment';
+import Report from '@/models/report.model';
 
 class CommentController {
 	async createComment(req: IReqAuth, res: Response, next: NextFunction) {
@@ -209,6 +211,11 @@ class CommentController {
 				});
 			}
 
+			await Report.deleteMany({
+				context_type: 'comment',
+				comment: deleted_comment?._id,
+			});
+
 			// Socket.io
 			io.to(`${deleted_comment?.context_id}`).emit(
 				'deleteComment',
@@ -374,6 +381,125 @@ class CommentController {
 			});
 		} catch (error) {
 			console.log(error);
+			return next(new ApiError());
+		}
+	}
+
+	async getCommentsByFilter(
+		req: IReqAuth,
+		res: Response,
+		next: NextFunction
+	) {
+		try {
+			const comments = await CommentService.getComments(req.query);
+
+			return res.status(200).json({
+				success: true,
+				message: 'Get comments successfully',
+				data: comments,
+			});
+		} catch (error) {
+			console.error(error);
+			return next(new ApiError());
+		}
+	}
+
+	async getCommentsInfo(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			const now = new Date();
+			const oneWeekAgo = new Date(
+				now.getTime() - 7 * 24 * 60 * 60 * 1000
+			);
+
+			// Count total comments
+			const totalComments = await Comment.countDocuments();
+
+			// Count reply comments
+			const totalReplyComments = await Comment.countDocuments({
+				reply_user: { $exists: true },
+			});
+
+			// Count normal comments (excluding reply comments)
+			const totalNormalComments = totalComments - totalReplyComments;
+
+			// Count comments created since last week
+			const commentsSinceLastWeek = await Comment.countDocuments({
+				createdAt: { $gte: oneWeekAgo },
+			});
+
+			// Count reply comments created since last week
+			const replyCommentsSinceLastWeek = await Comment.countDocuments({
+				reply_user: { $exists: true },
+				createdAt: { $gte: oneWeekAgo },
+			});
+
+			// Count normal comments created since last week
+			const normalCommentsSinceLastWeek =
+				commentsSinceLastWeek - replyCommentsSinceLastWeek;
+
+			const monthData = [];
+			for (let i = 0; i < 5; i++) {
+				// Show data for the past 5 months, including the current month
+				const startOfMonth = moment()
+					.subtract(i, 'months')
+					.startOf('month');
+				const endOfMonth = moment()
+					.subtract(i, 'months')
+					.endOf('month');
+
+				const monthCount = await Comment.countDocuments({
+					createdAt: {
+						$gte: startOfMonth,
+						$lte: endOfMonth.toDate(),
+					},
+				});
+
+				const monthName = startOfMonth.format('MMMM'); // Format the month name in English
+
+				// Count reply comments for each month
+				const replyCommentsCount = await Comment.countDocuments({
+					reply_user: { $exists: true },
+					createdAt: {
+						$gte: startOfMonth,
+						$lte: endOfMonth.toDate(),
+					},
+				});
+
+				// Count normal comments for each month (excluding reply comments)
+				const normalCommentsCount = monthCount - replyCommentsCount;
+
+				monthData.unshift({
+					month: monthName,
+					total: monthCount,
+					normal_comments: normalCommentsCount,
+					reply_comments: replyCommentsCount,
+				});
+			}
+
+			// Format data for response
+			const responseData = {
+				comments: {
+					total: totalComments,
+					sinceLastWeek: commentsSinceLastWeek,
+				},
+				normalComments: {
+					total: totalNormalComments,
+					sinceLastWeek: normalCommentsSinceLastWeek,
+				},
+				replyComments: {
+					total: totalReplyComments,
+					sinceLastWeek: replyCommentsSinceLastWeek,
+				},
+				commentsCreatedEachMonth: monthData,
+			};
+
+			return res.status(200).json({
+				success: true,
+				message: 'Admin dashboard comments data retrieved successfully',
+				data: responseData,
+			});
+		} catch (error) {
+			console.error(error);
 			return next(new ApiError());
 		}
 	}

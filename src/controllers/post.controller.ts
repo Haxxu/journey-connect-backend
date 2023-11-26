@@ -9,6 +9,7 @@ import User from '@/models/user.model';
 import { ApiResPayload } from '@/utils/api';
 import moment from 'moment';
 import Emotion from '@/models/emotion.model';
+import Report from '@/models/report.model';
 
 class PostController {
 	async createPost(req: IReqAuth, res: Response, next: NextFunction) {
@@ -125,6 +126,11 @@ class PostController {
 					}
 				);
 			}
+
+			await Report.deleteMany({
+				context_type: 'post',
+				comment: post?._id,
+			});
 
 			return res.status(200).json({
 				success: true,
@@ -583,6 +589,30 @@ class PostController {
 			});
 		} catch (error) {
 			console.error(error);
+			return next(new ApiError());
+		}
+	}
+
+	async getPostById(req: IReqAuth, res: Response, next: NextFunction) {
+		try {
+			const postId = req.params.id;
+
+			const visibility = ['public'];
+
+			if (req.user?.role === 'admin') {
+				visibility.push('private');
+				visibility.push('friend_only');
+			}
+
+			const post = await PostService.getPostsById(postId, visibility);
+
+			return res.status(200).json({
+				success: true,
+				message: 'Get posts successfully',
+				data: post,
+			});
+		} catch (error) {
+			console.log(error);
 			return next(new ApiError());
 		}
 	}

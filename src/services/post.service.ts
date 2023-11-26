@@ -66,6 +66,37 @@ class PostService {
 		return updatedPost;
 	}
 
+	static async getPostsById(
+		postId: string,
+		visibilityOptions: string[] = ['public']
+	) {
+		try {
+			const posts = await Post.findOne({
+				_id: postId,
+				visibility: { $in: visibilityOptions },
+			})
+				.populate([
+					{
+						path: 'owner',
+						select: '_id first_name last_name avatar medias',
+					},
+					{
+						path: 'inner_post',
+						populate: {
+							path: 'owner',
+							select: '_id first_name last_name avatar medias',
+						},
+					},
+				])
+				.sort({ createdAt: -1 })
+				.exec();
+
+			return posts;
+		} catch (error: any) {
+			throw new Error('Error fetching posts by ID: ' + error.message);
+		}
+	}
+
 	static async getPostsByUserId(
 		userId: string,
 		visibilityOptions: string[] = ['public']

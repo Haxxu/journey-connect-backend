@@ -15,16 +15,16 @@ function mapEmotionTypeToNumber(
 ): number | null {
 	switch (emotionType) {
 		case 'angry':
-			return -2;
+			return 0.2;
 		case 'sad':
-			return -1;
+			return 0.4;
 		case 'wow':
-			return 1;
+			return 0.6;
 		case 'haha':
-			return 2;
+			return 0.8;
 		case 'like':
 		case 'heart':
-			return 3;
+			return 1;
 		default:
 			return null;
 	}

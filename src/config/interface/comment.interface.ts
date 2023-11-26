@@ -12,4 +12,13 @@ export interface IComment extends Document {
 	root_comment?: string | Types.ObjectId;
 	status: 'active' | 'deactive';
 	_doc?: object;
+	emotionInfo?: {
+		total?: number;
+		like?: number;
+		heart?: number;
+		haha?: number;
+		wow?: number;
+		sad?: number;
+		angry?: number;
+	};
 }

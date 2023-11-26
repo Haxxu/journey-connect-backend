@@ -30,6 +30,9 @@ router.put('/posts/:id', [userAuth, postController.updatePostById]);
 // [POST] => delete post
 router.delete('/posts/:id', [userAuth, postController.deletePostById]);
 
+// [POST] => delete post
+router.get('/posts/:id', [userAuth, postController.getPostById]);
+
 // [GET] => get posts by filter (admin)
 router.get('/posts', [adminAuth, postController.getPosts]);
 

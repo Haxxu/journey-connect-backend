@@ -12,4 +12,7 @@ router.post('/reports', [userAuth, reportController.report]);
 // [GET] => get report
 router.get('/reports', [adminAuth, reportController.getReports]);
 
+// [DELETE] => delete report
+router.delete('/reports/:id', [adminAuth, reportController.deleteReportById]);
+
 export default router;

@@ -1,5 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose, { PaginateModel } from 'mongoose';
 import Joi from 'joi';
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 import { IComment } from '@configs/interface/comment.interface';
 
@@ -41,7 +42,12 @@ const commentSchema = new mongoose.Schema<IComment, CommentModel, {}>(
 	{ timestamps: true }
 );
 
-const Comment = mongoose.model<IComment>('Comment', commentSchema);
+commentSchema.plugin(mongoosePaginate);
+
+const Comment = mongoose.model<IComment, PaginateModel<IComment>>(
+	'Comment',
+	commentSchema
+);
 
 export const validateCreateComment = (comment: IComment) => {
 	const schema = Joi.object({
