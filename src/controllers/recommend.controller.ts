@@ -15,19 +15,35 @@ function mapEmotionTypeToNumber(
 ): number | null {
 	switch (emotionType) {
 		case 'angry':
-			return 0.2;
+			return 1;
 		case 'sad':
-			return 0.4;
+			return 2;
 		case 'wow':
-			return 0.6;
+			return 3;
 		case 'haha':
-			return 0.8;
+			return 4;
 		case 'like':
 		case 'heart':
-			return 1;
+			return 5;
 		default:
 			return null;
 	}
+
+	// switch (emotionType) {
+	// 	case 'angry':
+	// 		return 0.2;
+	// 	case 'sad':
+	// 		return 0.4;
+	// 	case 'wow':
+	// 		return 0.6;
+	// 	case 'haha':
+	// 		return 0.8;
+	// 	case 'like':
+	// 	case 'heart':
+	// 		return 1;
+	// 	default:
+	// 		return null;
+	// }
 }
 
 class RecommendController {
@@ -47,8 +63,8 @@ class RecommendController {
 				user_id: emotion?.owner.toString(),
 				post_id: emotion.post.toString(),
 				emotion_type: mapEmotionTypeToNumber(emotion?.type),
-				timestamp: emotion.updatedAt,
 			}));
+			// timestamp: emotion.updatedAt,
 
 			const csvWriter = createObjectCsvWriter({
 				path: 'recommendations/emotions.csv',
@@ -58,7 +74,7 @@ class RecommendController {
 				// 	{ id: 'emotion_type', title: 'Emotion Type' },
 				// 	{ id: 'timestamp', title: 'Timestamp' },
 				// ],
-				header: ['user_id', 'post_id', 'emotion_type', 'timestamp'],
+				header: ['user_id', 'post_id', 'emotion_type'],
 			});
 
 			await csvWriter.writeRecords(data);
