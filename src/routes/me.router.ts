@@ -74,7 +74,7 @@ router.get('/me/mutual-friends', [userAuth, friendController.getMutualFriends]);
 router.get('/me/is-admin', [adminAuth, meController.isAdmin]);
 
 // [GET] => Get saved posts
-router.get('/me/saved-posts', [adminAuth, postController.getSavedPosts]);
+router.get('/me/saved-posts', [userAuth, postController.getSavedPosts]);
 
 // [POST] => save post
 router.post('/me/posts', [userAuth, postController.savePost]);
