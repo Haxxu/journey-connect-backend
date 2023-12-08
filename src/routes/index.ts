@@ -7,6 +7,8 @@ import emotionRouter from './emotion.router';
 import commentRouter from './comment.router';
 import reportRouter from './report.router';
 import recommendRouter from './recommend.router';
+import chatRouter from './chat.router';
+import messageRouter from './message.router';
 
 const routes: any = [
 	authRouter,
@@ -18,6 +20,8 @@ const routes: any = [
 	commentRouter,
 	reportRouter,
 	recommendRouter,
+	chatRouter,
+	messageRouter,
 ];
 
 export default routes;
