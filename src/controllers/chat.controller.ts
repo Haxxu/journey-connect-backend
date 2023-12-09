@@ -8,7 +8,7 @@ import { io } from '@/index';
 class ChatController {
 	async getOrCreateChat(req: IReqAuth, res: Response, next: NextFunction) {
 		try {
-			const { user1: userId1, user2: userId2 } = req.body;
+			const { user1: userId1, user2: userId2 } = req.query;
 			if (![userId1, userId2].includes(req.user?._id)) {
 				return next(
 					new ApiError(
